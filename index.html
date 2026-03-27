@@ -776,24 +776,12 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
             <option value="date">日付（新しい順）</option>
           </select>
         </div>
-        <div class="wl" id="adminWL"><div class="wl-item" draggable="true" data-id="1000">
+        <div class="wl" id="adminWL"><div class="wl-item" draggable="true" data-id="1774608119577">
       <span style="color:var(--muted);font-size:0.8rem;margin-right:0.2rem;cursor:grab;">⠿</span>
       <div class="wl-cat">自主制作</div>
       <div class="wl-title">ああああ</div>
       <span class="wl-pub-badge" onclick="togglePublished(0)" title="クリックで公開/下書き切り替え">公開</span>
       <div class="wl-actions"><button class="ib ib-edit" onclick="editWork(0)">編集</button><button class="ib ib-del" onclick="deleteWork(0)">削除</button></div>
-    </div><div class="wl-item" draggable="true" data-id="1774607903080">
-      <span style="color:var(--muted);font-size:0.8rem;margin-right:0.2rem;cursor:grab;">⠿</span>
-      <div class="wl-cat">自主制作</div>
-      <div class="wl-title">だだだだｄ</div>
-      <span class="wl-pub-badge" onclick="togglePublished(1)" title="クリックで公開/下書き切り替え">公開</span>
-      <div class="wl-actions"><button class="ib ib-edit" onclick="editWork(1)">編集</button><button class="ib ib-del" onclick="deleteWork(1)">削除</button></div>
-    </div><div class="wl-item" draggable="true" data-id="1774607906821">
-      <span style="color:var(--muted);font-size:0.8rem;margin-right:0.2rem;cursor:grab;">⠿</span>
-      <div class="wl-cat">自主制作</div>
-      <div class="wl-title">らららら</div>
-      <span class="wl-pub-badge" onclick="togglePublished(2)" title="クリックで公開/下書き切り替え">公開</span>
-      <div class="wl-actions"><button class="ib ib-edit" onclick="editWork(2)">編集</button><button class="ib ib-del" onclick="deleteWork(2)">削除</button></div>
     </div></div>
         <div class="a-card">
           <div class="a-card-title" id="fmLabel">新規追加</div>
@@ -1117,13 +1105,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
     </div>
     <div class="work-grid" id="workGrid" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));"><div class="work-card">
       <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
-      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">ああああ</div><div class="work-card-desc">ここに説明文を書いてください。</div></div>
-    </div><div class="work-card">
-      <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
-      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">だだだだｄ</div><div class="work-card-desc"></div></div>
-    </div><div class="work-card">
-      <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
-      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">らららら</div><div class="work-card-desc"></div></div>
+      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">ああああ</div><div class="work-card-desc"></div></div>
     </div></div>
   </section><section id="contact" style="display: block;">
     <div class="contact-inner">
@@ -1210,7 +1192,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       </div>
     </div>
   </section><section id="work">
-    <div class="work-header reveal visible">
+    <div class="work-header reveal">
       <div>
         <div class="section-label">Work</div>
         <h2 class="work-title">SELECTED WORKS</h2>
@@ -1227,6 +1209,12 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
     <div class="work-grid" id="workGrid" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));"><div class="work-card" onclick="openModal('1000')">
       <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
       <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">ああああ</div><div class="work-card-desc">ここに説明文を書いてください。</div></div>
+    </div><div class="work-card" onclick="openModal('1774607903080')">
+      <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
+      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">だだだだｄ</div><div class="work-card-desc"></div></div>
+    </div><div class="work-card" onclick="openModal('1774607906821')">
+      <div class="work-card-media"><div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">自主制作</div></div></div>
+      <div class="work-card-body"><div class="work-cat">自主制作</div><div class="work-card-title">らららら</div><div class="work-card-desc"></div></div>
     </div></div>
   </section><section id="contact" style="display: block;">
     <div class="contact-inner">
@@ -2020,7 +2008,7 @@ function buildHtmlWithBakedData(){
   let raw = document.documentElement.outerHTML;
   const bakedMarkerStart = '/* __BAKED_DATA_START__ */
 (function(){
-  var _w=[{"id":1000,"cat":"personal","title":"ああああ","videoUrl":"","videoData":"","thumb":"","body":"ここに説明文を書いてください。","bodyHtml":"ここに説明文を書いてください。","tags":["Blender","After Effects"],"published":true,"createdAt":1000},{"id":1774607903080,"cat":"personal","title":"だだだだｄ","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774607903080},{"id":1774607906821,"cat":"personal","title":"らららら","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774607906821}];
+  var _w=[{"id":1774608119577,"cat":"personal","title":"ああああ","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774608119578}];
   var _s={"eyebrow":"3D CG Creator","herosub":"3DCGとモーションで映像をつくっています。","cta1":"Works","cta2":"Contact","contactsub":"お仕事のご依頼・ご相談はこちらからどうぞ。\n2〜3営業日以内にご返信します。","x":"#","ig":"#","yt":"#","reel":"","color":"#e0ffff","font_heading":"Bebas Neue","font_body":"Noto Sans JP","formspree":"","site_title":"","site_desc":"","ogp_image":""};
   var _d={"show_about":false,"show_contact":true,"hero_layout":"split","cols":"auto","section_order":["hero","about","work","contact"],"about_title":"About Me","about_body":"","about_img":""};
   if(_w&&!localStorage.getItem('mczk_works'))localStorage.setItem('mczk_works',JSON.stringify(_w));
@@ -2076,4 +2064,4 @@ function showToast(msg, type){
 </script>
 
 
-<div id="eagle-drag-images" style="position: fixed; top: -100000px;"></div><div id="toastContainer" style="position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none;"><div style="background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 1.2rem; font-family: &quot;Space Mono&quot;, monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; pointer-events: auto; box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 20px; max-width: 320px; line-height: 1.5; opacity: 1; transform: none; transition: opacity 0.25s, transform 0.25s;">GitHubに保存中...</div><div style="background: var(--surface); border: 1px solid rgba(224, 255, 255, 0.3); border-radius: 3px; padding: 0.7rem 1.2rem; font-family: &quot;Space Mono&quot;, monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.06em; pointer-events: auto; box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 20px; max-width: 320px; line-height: 1.5; opacity: 1; transform: none; transition: opacity 0.25s, transform 0.25s;">Works を保存しました → GitHubに反映しました！</div><div style="background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 1.2rem; font-family: &quot;Space Mono&quot;, monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; pointer-events: auto; box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 20px; max-width: 320px; line-height: 1.5; opacity: 1; transform: none; transition: opacity 0.25s, transform 0.25s;">GitHubに保存中...</div></div></body><inquiry-assist style="font-family: Arial, sans-serif;"></inquiry-assist><div id="immersive-translate-popup" style="all: initial"></div></html>
+<div id="eagle-drag-images" style="position: fixed; top: -100000px;"></div><div id="toastContainer" style="position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none;"><div style="background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 1.2rem; font-family: &quot;Space Mono&quot;, monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; pointer-events: auto; box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 20px; max-width: 320px; line-height: 1.5; opacity: 1; transform: none; transition: opacity 0.25s, transform 0.25s;">GitHubに保存中...</div></div></body><inquiry-assist style="font-family: Arial, sans-serif;"></inquiry-assist><div id="immersive-translate-popup" style="all: initial"></div></html>
