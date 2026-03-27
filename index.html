@@ -746,7 +746,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
   </div>
 </div>
 
-<div id="adminOverlay" class="open">
+<div id="adminOverlay">
     <div class="admin-topnav">
     <div class="admin-topnav-logo" onclick="closeAdmin()" style="cursor:pointer;" title="公開サイトへ戻る">MCZK — Admin</div>
     <div style="display:flex;gap:0.6rem;flex-shrink:0;">
@@ -1975,84 +1975,61 @@ async function testGitHubConfig(){
 }
 
 async function commitToGitHub(message){
-  const cfg = getGitHubConfig();
-  if(!cfg.pat || !cfg.owner || !cfg.repo || !cfg.path){
-    showToast('GitHub API設定が未完了です（管理画面 → 設定 → GitHub API連携設定）', 'warn');
+  const cfg=getGitHubConfig();
+  if(!cfg.pat||!cfg.owner||!cfg.repo||!cfg.path){
+    showToast('GitHub API設定が未完了です（管理画面 → 設定 → GitHub API連携設定）','warn');
     return;
   }
-  showToast('GitHubに保存中...', 'info');
+  showToast('GitHubに保存中...','info');
   try{
-    const shaRes = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
-      headers: { 'Authorization': 'token ' + cfg.pat, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if(!shaRes.ok){
-      const e = await shaRes.json();
-      showToast('SHA取得エラー: ' + (e.message || shaRes.status), 'error');
-      return;
-    }
-    const shaData = await shaRes.json();
-    const currentSha = shaData.sha;
-    const updatedHtml = buildHtmlWithBakedData();
-    const b64 = btoa(unescape(encodeURIComponent(updatedHtml)));
-    const putRes = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + cfg.pat,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: '[Auto] ' + message + ' - ' + new Date().toLocaleString('ja-JP'),
-        content: b64,
-        sha: currentSha
-      })
+    const {html:updatedHtml,sha:currentSha}=await buildHtmlWithBakedData();
+    const b64=btoa(unescape(encodeURIComponent(updatedHtml)));
+    const putRes=await fetch('https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+cfg.path,{
+      method:'PUT',
+      headers:{'Authorization':'token '+cfg.pat,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:message||'[Auto] '+new Date().toLocaleString('ja-JP'),content:b64,sha:currentSha})
     });
     if(putRes.ok){
-      showToast(message + ' → GitHubに反映しました！');
+      showToast((message||'保存')+' → GitHubに反映しました！','success');
     } else {
-      const err = await putRes.json();
-      showToast('commit エラー: ' + (err.message || putRes.status), 'error');
+      const e=await putRes.json();
+      showToast('GitHubエラー: '+(e.message||putRes.status),'error');
     }
-  } catch(e){
-    showToast('エラー: ' + e.message, 'error');
+  }catch(e){
+    showToast('commit失敗: '+e.message,'error');
   }
 }
 
-function buildHtmlWithBakedData(){
-  const works = getWorks();
-  const site = getSite();
-  const design = getDesign();
-  const pw = localStorage.getItem('mczk_pw') || '';
-  let raw = document.documentElement.outerHTML;
-  const bakedMarkerStart = '/* __BAKED_DATA_START__ */
-(function(){
-  var _w=[{"id":1774608119577,"cat":"personal","title":"ああああ","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774608119578},{"id":1774608122782,"cat":"personal","title":"だだだだ","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774608122782},{"id":1774608125244,"cat":"personal","title":"らららら","videoUrl":"","videoData":"","thumb":"","body":"","bodyHtml":"","tags":[],"published":true,"createdAt":1774608125244}];
-  var _s={"eyebrow":"3D CG Creator","herosub":"3DCGとモーションで映像をつくっています。","cta1":"Works","cta2":"Contact","contactsub":"お仕事のご依頼・ご相談はこちらからどうぞ。\n2〜3営業日以内にご返信します。","x":"#","ig":"#","yt":"#","reel":"","color":"#e0ffff","font_heading":"Bebas Neue","font_body":"Noto Sans JP","formspree":"","site_title":"","site_desc":"","ogp_image":""};
-  var _d={"show_about":false,"show_contact":true,"hero_layout":"split","cols":"auto","section_order":["hero","about","work","contact"],"about_title":"About Me","about_body":"","about_img":""};
-  if(_w)localStorage.setItem('mczk_works',JSON.stringify(_w));
-  if(_s)localStorage.setItem('mczk_site',JSON.stringify(_s));
-  if(_d)localStorage.setItem('mczk_design',JSON.stringify(_d));
-})();
-/* __BAKED_DATA_END__ */';
-  const bakedBlock = bakedMarkerStart + '\n' +
-    '(function(){\n' +
-    '  var _w=' + JSON.stringify(works) + ';\n' +
-    '  var _s=' + JSON.stringify(site) + ';\n' +
-    '  var _d=' + JSON.stringify(design) + ';\n' +
-    "  if(_w)localStorage.setItem('mczk_works',JSON.stringify(_w));\n" +
-    "  if(_s)localStorage.setItem('mczk_site',JSON.stringify(_s));\n" +
-    "  if(_d)localStorage.setItem('mczk_design',JSON.stringify(_d));\n" +
-    (pw ? "  if(!localStorage.getItem('mczk_pw'))localStorage.setItem('mczk_pw'," + JSON.stringify(pw) + ");\n" : '') +
-    '})();\n' +
-    bakedMarkerEnd;
-  if(raw.includes(bakedMarkerStart)){
-    const si = raw.indexOf(bakedMarkerStart);
-    const ei = raw.indexOf(bakedMarkerEnd) + bakedMarkerEnd.length;
-    raw = raw.slice(0, si) + bakedBlock + raw.slice(ei);
+async function buildHtmlWithBakedData(){
+  const cfg=getGitHubConfig();
+  const works=getWorks();
+  const site=getSite();
+  const design=getDesign();
+  const pw=localStorage.getItem('mczk_pw')||'';
+  const apiUrl='https://api.github.com/repos/'+cfg.owner+'/'+cfg.repo+'/contents/'+cfg.path;
+  const res=await fetch(apiUrl,{headers:{'Authorization':'token '+cfg.pat,'Accept':'application/vnd.github.v3+json'}});
+  const data=await res.json();
+  let raw=decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+  const ms='/* __BAKED_DATA_START__ */';
+  const me='/* __BAKED_DATA_END__ */';
+  const si=raw.indexOf(ms);
+  const ei=raw.indexOf(me);
+  const block=ms+'\n(function(){\n'+
+    '  var _w='+JSON.stringify(works)+';\n'+
+    '  var _s='+JSON.stringify(site)+';\n'+
+    '  var _d='+JSON.stringify(design)+';\n'+
+    (pw?'  if(!localStorage.getItem(\'mczk_pw\'))localStorage.setItem(\'mczk_pw\','+JSON.stringify(pw)+');\n':'')+
+    '  if(_w)localStorage.setItem(\'mczk_works\',JSON.stringify(_w));\n'+
+    '  if(_s)localStorage.setItem(\'mczk_site\',JSON.stringify(_s));\n'+
+    '  if(_d)localStorage.setItem(\'mczk_design\',JSON.stringify(_d));\n'+
+    '})();\n'+me;
+  if(si!==-1&&ei!==-1){
+    raw=raw.substring(0,si)+block+raw.substring(ei+me.length);
   } else {
-    raw = raw.replace('<\/script>\n<\/body>', bakedBlock + '\n<\/script>\n<\/body>');
+    raw=raw.replace('</script>\n</body>',block+'\n</script>\n</body>');
   }
-  return raw;
+  raw=raw.replace(/(<div\s+id="adminOverlay")[^>]*>/,'$1>');
+  return {html:raw,sha:data.sha};
 }
 
 // ===== トースト通知 =====
