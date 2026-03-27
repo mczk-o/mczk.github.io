@@ -562,6 +562,21 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
             <button class="a-btn a-btn-danger" onclick="clearAll()">全データ削除</button>
           </div>
         </div>
+        <div class="a-section-title" style="margin-top:1.4rem">GitHub API 連携設定</div>
+        <div class="a-card">
+          <div class="a-card-title">GitHub 自動 commit 設定</div>
+          <div class="a-hint" style="margin-bottom:1rem;padding:0.6rem 0.8rem;border:1px solid rgba(224,255,255,0.1);border-radius:2px;">「保存」実行時にGitHub APIでindex.htmlを自動commitします。<br>PATはlocalStorageに保存され、次回以降は入力不要です。</div>
+          <div class="a-fg"><label class="a-label">Personal Access Token (PAT)</label><input class="a-input" type="password" id="gh_pat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"><div class="a-hint">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) で発行。スコープ: <strong>repo</strong> にチェックを入れること。</div></div>
+          <div class="a-row">
+            <div class="a-fg"><label class="a-label">Owner（ユーザー名）</label><input class="a-input" id="gh_owner" placeholder="mczk-o"></div>
+            <div class="a-fg"><label class="a-label">Repository名</label><input class="a-input" id="gh_repo" placeholder="mczk.github.io"></div>
+          </div>
+          <div class="a-fg"><label class="a-label">ファイルパス</label><input class="a-input" id="gh_path" placeholder="index.html"><div class="a-hint">通常は index.html のままでOK。</div></div>
+          <div class="a-actions">
+            <button class="a-btn a-btn-primary" onclick="saveGitHubConfig()">設定を保存</button>
+            <button class="a-btn a-btn-ghost" onclick="testGitHubConfig()">接続テスト</button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -982,7 +997,7 @@ function checkPW(){
   if(document.getElementById('pwInput').value===getPW()){
     document.getElementById('pwScreen').style.display='none';
     document.getElementById('adminOverlay').classList.add('open');
-    renderAdminWL();loadSiteForm();loadDesignForm();initWYSIWYG();initDragSort();
+    renderAdminWL();loadSiteForm();loadDesignForm();loadGitHubForm();initWYSIWYG();initDragSort();
   } else {document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';}
 }
 function closeAdmin(){
@@ -1204,7 +1219,7 @@ function saveWork(){
     createdAt:idx!==''?(works[idx].createdAt||works[idx].id):Date.now()
   };
   if(idx!=='')works[idx]=entry;else works.push(entry);
-  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();alert('保存しました！');
+  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();commitToGitHub('Works を保存しました');
 }
 function resetForm(){
   document.getElementById('fmLabel').textContent='新規追加';
@@ -1256,7 +1271,7 @@ function saveDesign(){
   d.section_order=[...document.querySelectorAll('#sectionOrder .section-order-item')].map(el=>el.dataset.sec);
   saveDesignData(d);
 }
-function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();}
+function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();commitToGitHub('デザイン設定を保存しました');}
 
 // Section drag sort
 function initDragSort(){
@@ -1282,7 +1297,7 @@ function syncColorInput(){const v=document.getElementById('s_colorPicker').value
 function saveSite(){
   const fields=['reel','contactsub','cta1','cta2','x','ig','yt','color','font_heading','font_body','formspree','site_title','site_desc','ogp_image'];
   const s=getSite();fields.forEach(k=>{const el=document.getElementById('s_'+k);if(el)s[k]=el.value;});
-  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();alert('保存しました！');
+  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();commitToGitHub('サイト設定を保存しました');
 }
 function resetSite(){if(!confirm('リセットしますか？'))return;localStorage.removeItem(KEY_S);loadSiteForm();refreshAdminPreview();}
 function changePW(){const np=document.getElementById('newPw').value.trim();if(!np){alert('入力してください');return;}localStorage.setItem(KEY_PW,np);document.getElementById('newPw').value='';alert('変更しました');}
@@ -1330,6 +1345,160 @@ window.addEventListener('load',()=>{
   const nl=document.getElementById('navLogo');
   if(nl){nl.addEventListener('click',function(e){e.preventDefault();window._openAdmin();});}
 });
+
+// ===== GitHub API 連携 =====
+const KEY_GH = 'mczk_gh';
+
+function getGitHubConfig(){
+  const r = localStorage.getItem(KEY_GH);
+  return r ? JSON.parse(r) : {pat:'', owner:'mczk-o', repo:'mczk.github.io', path:'index.html'};
+}
+function saveGitHubConfigData(cfg){ localStorage.setItem(KEY_GH, JSON.stringify(cfg)); }
+
+function loadGitHubForm(){
+  const cfg = getGitHubConfig();
+  const f = {
+    gh_pat: document.getElementById('gh_pat'),
+    gh_owner: document.getElementById('gh_owner'),
+    gh_repo: document.getElementById('gh_repo'),
+    gh_path: document.getElementById('gh_path')
+  };
+  if(f.gh_pat) f.gh_pat.value = cfg.pat || '';
+  if(f.gh_owner) f.gh_owner.value = cfg.owner || 'mczk-o';
+  if(f.gh_repo) f.gh_repo.value = cfg.repo || 'mczk.github.io';
+  if(f.gh_path) f.gh_path.value = cfg.path || 'index.html';
+}
+
+function saveGitHubConfig(){
+  const cfg = {
+    pat: document.getElementById('gh_pat').value.trim(),
+    owner: document.getElementById('gh_owner').value.trim(),
+    repo: document.getElementById('gh_repo').value.trim(),
+    path: document.getElementById('gh_path').value.trim()
+  };
+  if(!cfg.pat){ showToast('PATを入力してください', 'error'); return; }
+  if(!cfg.owner || !cfg.repo || !cfg.path){ showToast('owner / repo / path を入力してください', 'error'); return; }
+  saveGitHubConfigData(cfg);
+  showToast('GitHub API設定を保存しました');
+}
+
+async function testGitHubConfig(){
+  const cfg = getGitHubConfig();
+  if(!cfg.pat){ showToast('PATが設定されていません', 'error'); return; }
+  showToast('接続テスト中...', 'info');
+  try{
+    const res = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
+      headers: { 'Authorization': 'token ' + cfg.pat, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if(res.ok){
+      const data = await res.json();
+      showToast('接続OK！ファイル確認済み (SHA: ' + data.sha.slice(0,8) + '...)');
+    } else {
+      const err = await res.json();
+      showToast('接続エラー: ' + (err.message || res.status), 'error');
+    }
+  } catch(e){
+    showToast('ネットワークエラー: ' + e.message, 'error');
+  }
+}
+
+async function commitToGitHub(message){
+  const cfg = getGitHubConfig();
+  if(!cfg.pat || !cfg.owner || !cfg.repo || !cfg.path){
+    showToast('GitHub API設定が未完了です（管理画面 → 設定 → GitHub API連携設定）', 'warn');
+    return;
+  }
+  showToast('GitHubに保存中...', 'info');
+  try{
+    const shaRes = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
+      headers: { 'Authorization': 'token ' + cfg.pat, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if(!shaRes.ok){
+      const e = await shaRes.json();
+      showToast('SHA取得エラー: ' + (e.message || shaRes.status), 'error');
+      return;
+    }
+    const shaData = await shaRes.json();
+    const currentSha = shaData.sha;
+    const updatedHtml = buildHtmlWithBakedData();
+    const b64 = btoa(unescape(encodeURIComponent(updatedHtml)));
+    const putRes = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + cfg.pat,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: '[Auto] ' + message + ' - ' + new Date().toLocaleString('ja-JP'),
+        content: b64,
+        sha: currentSha
+      })
+    });
+    if(putRes.ok){
+      showToast(message + ' → GitHubに反映しました！');
+    } else {
+      const err = await putRes.json();
+      showToast('commit エラー: ' + (err.message || putRes.status), 'error');
+    }
+  } catch(e){
+    showToast('エラー: ' + e.message, 'error');
+  }
+}
+
+function buildHtmlWithBakedData(){
+  const works = getWorks();
+  const site = getSite();
+  const design = getDesign();
+  const pw = localStorage.getItem('mczk_pw') || '';
+  let raw = document.documentElement.outerHTML;
+  const bakedMarkerStart = '/* __BAKED_DATA_START__ */';
+  const bakedMarkerEnd = '/* __BAKED_DATA_END__ */';
+  const bakedBlock = bakedMarkerStart + '\n' +
+    '(function(){\n' +
+    '  var _w=' + JSON.stringify(works) + ';\n' +
+    '  var _s=' + JSON.stringify(site) + ';\n' +
+    '  var _d=' + JSON.stringify(design) + ';\n' +
+    "  if(_w&&!localStorage.getItem('mczk_works'))localStorage.setItem('mczk_works',JSON.stringify(_w));\n" +
+    "  if(_s&&!localStorage.getItem('mczk_site'))localStorage.setItem('mczk_site',JSON.stringify(_s));\n" +
+    "  if(_d&&!localStorage.getItem('mczk_design'))localStorage.setItem('mczk_design',JSON.stringify(_d));\n" +
+    (pw ? "  if(!localStorage.getItem('mczk_pw'))localStorage.setItem('mczk_pw'," + JSON.stringify(pw) + ");\n" : '') +
+    '})();\n' +
+    bakedMarkerEnd;
+  if(raw.includes(bakedMarkerStart)){
+    const si = raw.indexOf(bakedMarkerStart);
+    const ei = raw.indexOf(bakedMarkerEnd) + bakedMarkerEnd.length;
+    raw = raw.slice(0, si) + bakedBlock + raw.slice(ei);
+  } else {
+    raw = raw.replace('<\/script>\n<\/body>', bakedBlock + '\n<\/script>\n<\/body>');
+  }
+  return raw;
+}
+
+// ===== トースト通知 =====
+function showToast(msg, type){
+  let container = document.getElementById('toastContainer');
+  if(!container){
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  const colors = {error:'#f87171',warn:'#fbbf24',info:'var(--muted)',success:'var(--accent)'};
+  const borderColors = {error:'#f8717155',warn:'#fbbf2455',info:'var(--border)',success:'rgba(224,255,255,0.3)'};
+  const t = type || 'success';
+  toast.style.cssText = 'background:var(--surface);border:1px solid ' + (borderColors[t]||borderColors.success) + ';border-radius:3px;padding:0.7rem 1.2rem;font-family:\'Space Mono\',monospace;font-size:0.7rem;color:' + (colors[t]||colors.success) + ';letter-spacing:0.06em;pointer-events:auto;box-shadow:0 4px 20px rgba(0,0,0,0.4);max-width:320px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity 0.25s,transform 0.25s;';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  requestAnimationFrame(function(){ toast.style.opacity='1'; toast.style.transform='none'; });
+  const duration = (type === 'info') ? 8000 : 4000;
+  setTimeout(function(){
+    toast.style.opacity='0'; toast.style.transform='translateY(8px)';
+    setTimeout(function(){ toast.remove(); }, 300);
+  }, duration);
+}
+
 </script>
 </body>
 </html>
