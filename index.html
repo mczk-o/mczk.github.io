@@ -1305,6 +1305,7 @@ function exportData(){const a=document.createElement('a');a.href='data:applicati
 function clearAll(){if(!confirm('全データを削除しますか？'))return;[KEY_W,KEY_S,KEY_D].forEach(k=>localStorage.removeItem(k));renderAdminWL();refreshAdminPreview();alert('削除しました');}
 
 const _initFn=()=>{
+
   const site=getSite();const design=getDesign();
   applyColor(site.color);applyFonts(site.font_heading,site.font_body);
 
@@ -1344,8 +1345,13 @@ const _initFn=()=>{
   // 公開サイトのロゴクリックでAdmin
   const nl=document.getElementById('navLogo');
   if(nl){nl.addEventListener('click',function(e){e.preventDefault();window._openAdmin();});}
+
 };
-if(document.readyState==='complete'||document.readyState==='interactive'){_initFn();}else{window.addEventListener('load',_initFn);}
+if(document.readyState==='complete'||document.readyState==='interactive'){
+  _initFn();
+}else{
+  window.addEventListener('load',_initFn);
+}
 
 // ===== GitHub API 連携 =====
 const KEY_GH = 'mczk_gh';
