@@ -287,6 +287,81 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
 }
 
 </style>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+  import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+  "apiKey": "AIzaSyDHXi1JGpHVwss-hpFQ8hApPdR07Q0YX2Y",
+  "authDomain": "mczk-75cee.firebaseapp.com",
+  "projectId": "mczk-75cee",
+  "storageBucket": "mczk-75cee.firebasestorage.app",
+  "messagingSenderId": "993487492385",
+  "appId": "1:993487492385:web:65494105dc3e434bf21a60",
+  "measurementId": "G-SYQ4YEFP43"
+};
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Firestore → localStorage に即時同期（他デバイスからの更新を検知）
+  function listenFirestore() {
+    const docRef = doc(db, 'mczk', 'data');
+    onSnapshot(docRef, (snap) => {
+      if (!snap.exists()) return;
+      const d = snap.data();
+      let changed = false;
+      if (d.works !== undefined) { localStorage.setItem('mczk_works', JSON.stringify(d.works)); changed = true; }
+      if (d.site !== undefined)  { localStorage.setItem('mczk_site',  JSON.stringify(d.site));  changed = true; }
+      if (d.design !== undefined){ localStorage.setItem('mczk_design',JSON.stringify(d.design));changed = true; }
+      if (changed && !window._adminOpen) {
+        // 公開サイト表示中なら即時再描画
+        const site = JSON.parse(localStorage.getItem('mczk_site') || '{}');
+        const design = JSON.parse(localStorage.getItem('mczk_design') || '{}');
+        if (window.applyPublic) applyPublic({...window.DEFAULT_SITE, ...site});
+        if (window.renderPublic) renderPublic('all');
+        if (window.applyDesign) applyDesign({...window.DEFAULT_DESIGN, ...design});
+        if (window.applyColor) applyColor(site.color || '#e0ffff');
+        if (window.applyFonts) applyFonts(site.font_heading, site.font_body);
+      }
+    });
+  }
+
+  // Firestore への保存
+  window.saveToFirestore = async function() {
+    try {
+      const works = JSON.parse(localStorage.getItem('mczk_works') || '[]');
+      const site  = JSON.parse(localStorage.getItem('mczk_site')  || '{}');
+      const design= JSON.parse(localStorage.getItem('mczk_design')|| '{}');
+      const docRef = doc(db, 'mczk', 'data');
+      await setDoc(docRef, { works, site, design, updatedAt: new Date().toISOString() });
+      console.log('Firestore 保存完了');
+      return true;
+    } catch(e) {
+      console.error('Firestore 保存エラー:', e);
+      return false;
+    }
+  };
+
+  // 初期ロード：Firestoreからデータを取得してlocalStorageを初期化
+  async function initFromFirestore() {
+    try {
+      const docRef = doc(db, 'mczk', 'data');
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const d = snap.data();
+        if (d.works) localStorage.setItem('mczk_works', JSON.stringify(d.works));
+        if (d.site)  localStorage.setItem('mczk_site',  JSON.stringify(d.site));
+        if (d.design)localStorage.setItem('mczk_design',JSON.stringify(d.design));
+      }
+    } catch(e) { console.warn('Firestore 初期ロードエラー:', e); }
+    listenFirestore();
+  }
+
+  window._adminOpen = false;
+  initFromFirestore();
+</script>
 </head>
 <body>
 
@@ -1219,7 +1294,7 @@ function saveWork(){
     createdAt:idx!==''?(works[idx].createdAt||works[idx].id):Date.now()
   };
   if(idx!=='')works[idx]=entry;else works.push(entry);
-  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();commitToGitHub('Works を保存しました');
+  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('Works を保存しました');
 }
 function resetForm(){
   document.getElementById('fmLabel').textContent='新規追加';
@@ -1271,7 +1346,7 @@ function saveDesign(){
   d.section_order=[...document.querySelectorAll('#sectionOrder .section-order-item')].map(el=>el.dataset.sec);
   saveDesignData(d);
 }
-function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();commitToGitHub('デザイン設定を保存しました');}
+function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('デザイン設定を保存しました');}
 
 // Section drag sort
 function initDragSort(){
@@ -1297,7 +1372,7 @@ function syncColorInput(){const v=document.getElementById('s_colorPicker').value
 function saveSite(){
   const fields=['reel','contactsub','cta1','cta2','x','ig','yt','color','font_heading','font_body','formspree','site_title','site_desc','ogp_image'];
   const s=getSite();fields.forEach(k=>{const el=document.getElementById('s_'+k);if(el)s[k]=el.value;});
-  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();commitToGitHub('サイト設定を保存しました');
+  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('サイト設定を保存しました');
 }
 function resetSite(){if(!confirm('リセットしますか？'))return;localStorage.removeItem(KEY_S);loadSiteForm();refreshAdminPreview();}
 function changePW(){const np=document.getElementById('newPw').value.trim();if(!np){alert('入力してください');return;}localStorage.setItem(KEY_PW,np);document.getElementById('newPw').value='';alert('変更しました');}
