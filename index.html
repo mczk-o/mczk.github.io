@@ -1405,7 +1405,7 @@ async function testGitHubConfig(){
 
 async function commitToGitHub(message){
   const cfg=getGitHubConfig();
-  if(!cfg.pat||!cfg.owner||!cfg.repo||!cfg.path){showToast('GitHub API設定が未完了です（管理画面 → 設定 → GitHub API連携設定）','warn');return;}
+  if(!cfg.pat||!cfg.owner||!cfg.repo||!cfg.path){showToast('GitHub API設定が未完了です（管理画面→設定→GitHub API連携設定）','warn');return;}
   showToast('GitHubに保存中...','info');
   try{
     const {html:updatedHtml,sha:currentSha}=await buildHtmlWithBakedData();
@@ -1428,9 +1428,11 @@ async function buildHtmlWithBakedData(){
   const res=await fetch(apiUrl,{headers:{'Authorization':'token '+cfg.pat,'Accept':'application/vnd.github.v3+json'}});
   const data=await res.json();
   let raw=decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-  const ms='/* __BAKED_DATA_START__ */';const me='/* __BAKED_DATA_END__ */';
-  const si=raw.indexOf(ms);const ei=raw.indexOf(me);
-  const block=ms+'\n(function(){\n'+
+  const bakedTag='<script id="baked-data">';
+  const bakedTagEnd='<\/script>';
+  const si=raw.indexOf(bakedTag);
+  const ei=raw.indexOf(bakedTagEnd,si);
+  const newBlock=bakedTag+'\n(function(){\n'+
     '  var _w='+JSON.stringify(works)+';\n'+
     '  var _s='+JSON.stringify(site)+';\n'+
     '  var _d='+JSON.stringify(design)+';\n'+
@@ -1438,9 +1440,8 @@ async function buildHtmlWithBakedData(){
     '  if(_w)localStorage.setItem(\'mczk_works\',JSON.stringify(_w));\n'+
     '  if(_s)localStorage.setItem(\'mczk_site\',JSON.stringify(_s));\n'+
     '  if(_d)localStorage.setItem(\'mczk_design\',JSON.stringify(_d));\n'+
-    '})();\n'+me;
-  if(si!==-1&&ei!==-1){raw=raw.substring(0,si)+block+raw.substring(ei+me.length);}
-  else{raw=raw.replace('</script>\n</body>',block+'\n</script>\n</body>');}
+    '})();\n'+bakedTagEnd;
+  if(si!==-1&&ei!==-1){raw=raw.substring(0,si)+newBlock+raw.substring(ei+bakedTagEnd.length);}
   raw=raw.replace(/(<div\s+id="adminOverlay")[^>]*>/,'$1>');
   return {html:raw,sha:data.sha};
 }
@@ -1469,6 +1470,10 @@ function showToast(msg, type){
   }, duration);
 }
 
+</script>
+<script id="baked-data">
+(function(){
+})();
 </script>
 </body>
 </html>
