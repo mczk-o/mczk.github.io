@@ -305,7 +305,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Firestore → localStorage に即時同期（他デバイスからの更新を検知）
+  // Firestore â localStorage ã«å³æåæï¼ä»ããã¤ã¹ããã®æ´æ°ãæ¤ç¥ï¼
   function listenFirestore() {
     const docRef = doc(db, 'mczk', 'data');
     onSnapshot(docRef, (snap) => {
@@ -316,7 +316,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       if (d.site !== undefined)  { localStorage.setItem('mczk_site',  JSON.stringify(d.site));  changed = true; }
       if (d.design !== undefined){ localStorage.setItem('mczk_design',JSON.stringify(d.design));changed = true; }
       if (changed && !window._adminOpen) {
-        // 公開サイト表示中なら即時再描画
+        // å¬éãµã¤ãè¡¨ç¤ºä¸­ãªãå³æåæç»
         const site = JSON.parse(localStorage.getItem('mczk_site') || '{}');
         const design = JSON.parse(localStorage.getItem('mczk_design') || '{}');
         if (window.applyPublic) applyPublic({...window.DEFAULT_SITE, ...site});
@@ -328,7 +328,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
     });
   }
 
-  // Firestore への保存
+  // Firestore ã¸ã®ä¿å­
   window.saveToFirestore = async function() {
     try {
       const works = JSON.parse(localStorage.getItem('mczk_works') || '[]');
@@ -336,15 +336,15 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       const design= JSON.parse(localStorage.getItem('mczk_design')|| '{}');
       const docRef = doc(db, 'mczk', 'data');
       await setDoc(docRef, { works, site, design, updatedAt: new Date().toISOString() });
-      console.log('Firestore 保存完了');
+      console.log('Firestore ä¿å­å®äº');
       return true;
     } catch(e) {
-      console.error('Firestore 保存エラー:', e);
+      console.error('Firestore ä¿å­ã¨ã©ã¼:', e);
       return false;
     }
   };
 
-  // 初期ロード：Firestoreからデータを取得してlocalStorageを初期化
+  // åæã­ã¼ãï¼Firestoreãããã¼ã¿ãåå¾ãã¦localStorageãåæå
   async function initFromFirestore() {
     try {
       const docRef = doc(db, 'mczk', 'data');
@@ -355,7 +355,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
         if (d.site)  localStorage.setItem('mczk_site',  JSON.stringify(d.site));
         if (d.design)localStorage.setItem('mczk_design',JSON.stringify(d.design));
       }
-    } catch(e) { console.warn('Firestore 初期ロードエラー:', e); }
+    } catch(e) { console.warn('Firestore åæã­ã¼ãã¨ã©ã¼:', e); }
     listenFirestore();
   }
 
@@ -367,23 +367,23 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
 
 <div id="pwScreen">
   <div class="pw-box">
-    <div class="pw-logo" onclick="closeAdmin()" style="cursor:pointer;" title="公開サイトへ戻る">MCZK</div>
+    <div class="pw-logo" onclick="closeAdmin()" style="cursor:pointer;" title="å¬éãµã¤ãã¸æ»ã">MCZK</div>
     <div class="pw-sub">Admin Panel</div>
-    <input class="pw-input" type="password" id="pwInput" placeholder="••••••••" autocomplete="off">
+    <input class="pw-input" type="password" id="pwInput" placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" autocomplete="off">
     <button class="pw-submit" onclick="checkPW()">Enter</button>
-    <div class="pw-error" id="pwError">パスワードが違います</div>
+    <div class="pw-error" id="pwError">ãã¹ã¯ã¼ããéãã¾ã</div>
     <div style="margin-top:1.2rem;">
-      <a onclick="closeAdmin()" style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">← 公開サイトへ戻る</a>
+      <a onclick="closeAdmin()" style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">â å¬éãµã¤ãã¸æ»ã</a>
     </div>
   </div>
 </div>
 
 <div id="adminOverlay">
     <div class="admin-topnav">
-    <div class="admin-topnav-logo" onclick="closeAdmin()" style="cursor:pointer;" title="公開サイトへ戻る">MCZK — Admin</div>
+    <div class="admin-topnav-logo" onclick="closeAdmin()" style="cursor:pointer;" title="å¬éãµã¤ãã¸æ»ã">MCZK â Admin</div>
     <div style="display:flex;gap:0.6rem;flex-shrink:0;">
-      <button class="a-btn a-btn-ghost" onclick="refreshAdminPreview()">↺ 更新</button>
-      <button class="a-btn a-btn-ghost" onclick="closeAdmin()">← 公開サイトへ</button>
+      <button class="a-btn a-btn-ghost" onclick="refreshAdminPreview()">âº æ´æ°</button>
+      <button class="a-btn a-btn-ghost" onclick="closeAdmin()">â å¬éãµã¤ãã¸</button>
     </div>
   </div>
   <div class="admin-body-wrap">
@@ -391,32 +391,32 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       <div class="admin-left-header">
         <div class="admin-tabs-row">
           <button class="a-tab active" onclick="switchTab('works',this)">Works</button>
-          <button class="a-tab" onclick="switchTab('site',this)">サイト設定</button>
-          <button class="a-tab" onclick="switchTab('design',this)">デザイン</button>
-          <button class="a-tab" onclick="switchTab('pw',this)">設定</button>
+          <button class="a-tab" onclick="switchTab('site',this)">ãµã¤ãè¨­å®</button>
+          <button class="a-tab" onclick="switchTab('design',this)">ãã¶ã¤ã³</button>
+          <button class="a-tab" onclick="switchTab('pw',this)">è¨­å®</button>
         </div>
       </div>
 
       <div class="a-panel active" id="tab-works">
-        <div class="a-section-title">作品一覧</div>
+        <div class="a-section-title">ä½åä¸è¦§</div>
         <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;align-items:center;">
-          <label class="a-label" style="margin:0;white-space:nowrap;">並び替え</label>
+          <label class="a-label" style="margin:0;white-space:nowrap;">ä¸¦ã³æ¿ã</label>
           <select class="a-font-select" id="sortKey" style="flex:1;" onchange="renderAdminWL()">
-            <option value="default">追加順</option>
-            <option value="title">タイトル</option>
-            <option value="cat">カテゴリ</option>
-            <option value="date">日付（新しい順）</option>
+            <option value="default">è¿½å é </option>
+            <option value="title">ã¿ã¤ãã«</option>
+            <option value="cat">ã«ãã´ãª</option>
+            <option value="date">æ¥ä»ï¼æ°ããé ï¼</option>
           </select>
         </div>
         <div class="wl" id="adminWL"></div>
         <div class="a-card">
-          <div class="a-card-title" id="fmLabel">新規追加</div>
+          <div class="a-card-title" id="fmLabel">æ°è¦è¿½å </div>
           <input type="hidden" id="editIdx">
           <div class="a-row">
-            <div class="a-fg"><label class="a-label">タイトル</label><input class="a-input" id="f_title" placeholder="作品タイトル"></div>
-            <div class="a-fg"><label class="a-label">カテゴリ</label>
+            <div class="a-fg"><label class="a-label">ã¿ã¤ãã«</label><input class="a-input" id="f_title" placeholder="ä½åã¿ã¤ãã«"></div>
+            <div class="a-fg"><label class="a-label">ã«ãã´ãª</label>
               <select class="a-select" id="f_cat">
-                <option value="personal">自主制作</option>
+                <option value="personal">èªä¸»å¶ä½</option>
                 <option value="mv">MV</option>
                 <option value="motion">Motion</option>
                 <option value="three">3DCG</option>
@@ -425,21 +425,21 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
             </div>
           </div>
           <div class="a-fg">
-            <label class="a-label">動画</label>
+            <label class="a-label">åç»</label>
             <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;">
               <button type="button" class="a-btn a-btn-ghost" id="videoTabUrl" onclick="switchVideoTab('url')" style="font-size:0.6rem;padding:0.3rem 0.8rem;border-color:var(--accent);color:var(--accent);">URL</button>
-              <button type="button" class="a-btn a-btn-ghost" id="videoTabFile" onclick="switchVideoTab('file')" style="font-size:0.6rem;padding:0.3rem 0.8rem;">アップロード</button>
+              <button type="button" class="a-btn a-btn-ghost" id="videoTabFile" onclick="switchVideoTab('file')" style="font-size:0.6rem;padding:0.3rem 0.8rem;">ã¢ããã­ã¼ã</button>
             </div>
             <div id="videoInputUrl">
-              <input class="a-input" id="f_video" placeholder="https://youtube.com/watch?v=XXXX または Vimeo・embed URL など" oninput="previewVideoUrl(this.value)">
-              <div class="a-hint">YouTube / Vimeo / X(Twitter) などの通常URLをそのまま貼るだけでOK。embed URLでも可。</div>
+              <input class="a-input" id="f_video" placeholder="https://youtube.com/watch?v=XXXX ã¾ãã¯ Vimeoã»embed URL ãªã©" oninput="previewVideoUrl(this.value)">
+              <div class="a-hint">YouTube / Vimeo / X(Twitter) ãªã©ã®éå¸¸URLããã®ã¾ã¾è²¼ãã ãã§OKãembed URLã§ãå¯ã</div>
               <div id="videoUrlPreview" style="margin-top:0.5rem;display:none;aspect-ratio:16/9;background:#0a0c14;border:1px solid var(--border);border-radius:2px;overflow:hidden;"></div>
             </div>
             <div id="videoInputFile" style="display:none;">
               <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;border:1px dashed var(--border);border-radius:2px;padding:1.4rem;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'" onclick="document.getElementById('f_video_file').click()">
-                <span style="font-size:1.5rem;">📁</span>
-                <span style="font-family:'Space Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.08em;">クリックして動画ファイルを選択</span>
-                <span style="font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);">MP4 / WebM / MOV など</span>
+                <span style="font-size:1.5rem;">ð</span>
+                <span style="font-family:'Space Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.08em;">ã¯ãªãã¯ãã¦åç»ãã¡ã¤ã«ãé¸æ</span>
+                <span style="font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);">MP4 / WebM / MOV ãªã©</span>
                 <input type="file" id="f_video_file" accept="video/*" style="display:none;" onchange="handleVideoUpload(this)">
               </label>
               <div id="videoFilePreview" style="margin-top:0.5rem;display:none;aspect-ratio:16/9;background:#0a0c14;border:1px solid var(--border);border-radius:2px;overflow:hidden;"></div>
@@ -447,60 +447,60 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
               <input type="hidden" id="f_video_data">
             </div>
           </div>
-          <div class="a-fg"><label class="a-label">サムネイル画像URL</label><input class="a-input" id="f_thumb" placeholder="https://...（動画なしの場合）"></div>
+          <div class="a-fg"><label class="a-label">ãµã ãã¤ã«ç»åURL</label><input class="a-input" id="f_thumb" placeholder="https://...ï¼åç»ãªãã®å ´åï¼"></div>
           <div class="a-fg">
-            <label class="a-label">説明文（リッチ）</label>
+            <label class="a-label">èª¬ææï¼ãªããï¼</label>
             <div class="rich-toolbar">
-              <button type="button" class="rtb" onclick="richCmd('bold')" title="太字"><b>B</b></button>
-              <button type="button" class="rtb" onclick="richCmd('italic')" title="斜体"><i>I</i></button>
-              <button type="button" class="rtb" onclick="insertRichLink()" title="リンク">🔗</button>
-              <button type="button" class="rtb" onclick="insertRichVideo()" title="動画URL挿入">▶</button>
-              <label class="rtb" title="画像アップロード" style="cursor:pointer;">📎<input type="file" id="richImgFile" accept="image/*" style="display:none;" onchange="insertRichImage(this)"></label>
-              <button type="button" class="rtb rtb-clear" onclick="document.getElementById('richEditor').innerHTML=''" title="クリア">✕</button>
+              <button type="button" class="rtb" onclick="richCmd('bold')" title="å¤ªå­"><b>B</b></button>
+              <button type="button" class="rtb" onclick="richCmd('italic')" title="æä½"><i>I</i></button>
+              <button type="button" class="rtb" onclick="insertRichLink()" title="ãªã³ã¯">ð</button>
+              <button type="button" class="rtb" onclick="insertRichVideo()" title="åç»URLæ¿å¥">â¶</button>
+              <label class="rtb" title="ç»åã¢ããã­ã¼ã" style="cursor:pointer;">ð<input type="file" id="richImgFile" accept="image/*" style="display:none;" onchange="insertRichImage(this)"></label>
+              <button type="button" class="rtb rtb-clear" onclick="document.getElementById('richEditor').innerHTML=''" title="ã¯ãªã¢">â</button>
             </div>
-            <div id="richEditor" class="rich-editor" contenteditable="true" data-placeholder="説明文・制作背景・こだわった点など。画像は直接コピペもOK。"></div>
-            <div class="a-hint">画像はCtrl+Vで直接貼り付け可能。動画はURLをボタンから挿入。</div>
+            <div id="richEditor" class="rich-editor" contenteditable="true" data-placeholder="èª¬ææã»å¶ä½èæ¯ã»ãã ãã£ãç¹ãªã©ãç»åã¯ç´æ¥ã³ãããOKã"></div>
+            <div class="a-hint">ç»åã¯Ctrl+Vã§ç´æ¥è²¼ãä»ãå¯è½ãåç»ã¯URLããã¿ã³ããæ¿å¥ã</div>
           </div>
-          <div class="a-fg"><label class="a-label">タグ（カンマ区切り）</label><input class="a-input" id="f_tags" placeholder="Blender, After Effects"></div>
+          <div class="a-fg"><label class="a-label">ã¿ã°ï¼ã«ã³ãåºåãï¼</label><input class="a-input" id="f_tags" placeholder="Blender, After Effects"></div>
           <div class="a-fg" style="display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0;">
             <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);">
-              <input type="checkbox" id="f_published" checked style="accent-color:var(--accent);width:15px;height:15px;"> 公開（チェックOFF＝下書き：公開サイトに非表示）
+              <input type="checkbox" id="f_published" checked style="accent-color:var(--accent);width:15px;height:15px;"> å¬éï¼ãã§ãã¯OFFï¼ä¸æ¸ãï¼å¬éãµã¤ãã«éè¡¨ç¤ºï¼
             </label>
           </div>
           <div class="a-actions">
-            <button class="a-btn a-btn-primary" onclick="saveWork()">保存</button>
-            <button class="a-btn a-btn-ghost" onclick="resetForm()">キャンセル</button>
+            <button class="a-btn a-btn-primary" onclick="saveWork()">ä¿å­</button>
+            <button class="a-btn a-btn-ghost" onclick="resetForm()">ã­ã£ã³ã»ã«</button>
           </div>
         </div>
       </div>
 
       <div class="a-panel" id="tab-site">
-        <div class="a-section-title">サイト設定</div>
-        <div class="a-hint" style="margin-bottom:1rem;padding:0.6rem 0.8rem;border:1px solid rgba(224,255,255,0.1);border-radius:2px;">右側のプレビューでテキストを直接クリック編集できます。ここでは動画・SNS・デザイン設定を行います。</div>
+        <div class="a-section-title">ãµã¤ãè¨­å®</div>
+        <div class="a-hint" style="margin-bottom:1rem;padding:0.6rem 0.8rem;border:1px solid rgba(224,255,255,0.1);border-radius:2px;">å³å´ã®ãã¬ãã¥ã¼ã§ãã­ã¹ããç´æ¥ã¯ãªãã¯ç·¨éã§ãã¾ããããã§ã¯åç»ã»SNSã»ãã¶ã¤ã³è¨­å®ãè¡ãã¾ãã</div>
         <div class="a-card">
-          <div class="a-card-title">サイト基本情報</div>
-          <div class="a-fg"><label class="a-label">サイトタイトル（ブラウザタブ・OGP）</label><input class="a-input" id="s_site_title" placeholder="mczk — CG Creator"></div>
-          <div class="a-fg"><label class="a-label">サイト概要（SEO description・OGP）</label><textarea class="a-textarea" id="s_site_desc" style="min-height:60px;" placeholder="3DCGとモーションで映像をつくっています。"></textarea></div>
-          <div class="a-fg"><label class="a-label">OGP画像URL（SNSシェア用サムネイル）</label><input class="a-input" id="s_ogp_image" placeholder="https://... 推奨: 1200×630px"><div class="a-hint">Twitter/X・Discordなどでシェアされたときに表示される画像。Gyazo等でURLを取得して貼ること。</div></div>
+          <div class="a-card-title">ãµã¤ãåºæ¬æå ±</div>
+          <div class="a-fg"><label class="a-label">ãµã¤ãã¿ã¤ãã«ï¼ãã©ã¦ã¶ã¿ãã»OGPï¼</label><input class="a-input" id="s_site_title" placeholder="mczk â CG Creator"></div>
+          <div class="a-fg"><label class="a-label">ãµã¤ãæ¦è¦ï¼SEO descriptionã»OGPï¼</label><textarea class="a-textarea" id="s_site_desc" style="min-height:60px;" placeholder="3DCGã¨ã¢ã¼ã·ã§ã³ã§æ åãã¤ãã£ã¦ãã¾ãã"></textarea></div>
+          <div class="a-fg"><label class="a-label">OGPç»åURLï¼SNSã·ã§ã¢ç¨ãµã ãã¤ã«ï¼</label><input class="a-input" id="s_ogp_image" placeholder="https://... æ¨å¥¨: 1200Ã630px"><div class="a-hint">Twitter/Xã»Discordãªã©ã§ã·ã§ã¢ãããã¨ãã«è¡¨ç¤ºãããç»åãGyazoç­ã§URLãåå¾ãã¦è²¼ããã¨ã</div></div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">Reel動画（Hero右側）</div>
+          <div class="a-card-title">Reelåç»ï¼Heroå³å´ï¼</div>
           <div class="a-fg">
-            <label class="a-label">動画</label>
+            <label class="a-label">åç»</label>
             <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;">
               <button type="button" class="a-btn a-btn-ghost" id="reelTabUrl" onclick="switchReelTab('url')" style="font-size:0.6rem;padding:0.3rem 0.8rem;border-color:var(--accent);color:var(--accent);">URL</button>
-              <button type="button" class="a-btn a-btn-ghost" id="reelTabFile" onclick="switchReelTab('file')" style="font-size:0.6rem;padding:0.3rem 0.8rem;">アップロード</button>
+              <button type="button" class="a-btn a-btn-ghost" id="reelTabFile" onclick="switchReelTab('file')" style="font-size:0.6rem;padding:0.3rem 0.8rem;">ã¢ããã­ã¼ã</button>
             </div>
             <div id="reelInputUrl">
-              <input class="a-input" id="s_reel" placeholder="https://youtube.com/watch?v=XXXX など通常URLをそのまま貼るだけでOK" oninput="previewReelUrl(this.value)">
-              <div class="a-hint">YouTube / Vimeo の通常URLをそのまま貼ればOK。embed URLでも可。</div>
+              <input class="a-input" id="s_reel" placeholder="https://youtube.com/watch?v=XXXX ãªã©éå¸¸URLããã®ã¾ã¾è²¼ãã ãã§OK" oninput="previewReelUrl(this.value)">
+              <div class="a-hint">YouTube / Vimeo ã®éå¸¸URLããã®ã¾ã¾è²¼ãã°OKãembed URLã§ãå¯ã</div>
               <div id="reelUrlPreview" style="margin-top:0.5rem;display:none;aspect-ratio:16/9;background:#0a0c14;border:1px solid var(--border);border-radius:2px;overflow:hidden;"></div>
             </div>
             <div id="reelInputFile" style="display:none;">
               <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;border:1px dashed var(--border);border-radius:2px;padding:1.4rem;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'" onclick="document.getElementById('s_reel_file').click()">
-                <span style="font-size:1.5rem;">📁</span>
-                <span style="font-family:'Space Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.08em;">クリックして動画ファイルを選択</span>
-                <span style="font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);">MP4 / WebM / MOV など</span>
+                <span style="font-size:1.5rem;">ð</span>
+                <span style="font-family:'Space Mono',monospace;font-size:0.64rem;color:var(--muted);letter-spacing:0.08em;">ã¯ãªãã¯ãã¦åç»ãã¡ã¤ã«ãé¸æ</span>
+                <span style="font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);">MP4 / WebM / MOV ãªã©</span>
                 <input type="file" id="s_reel_file" accept="video/*" style="display:none;" onchange="handleReelUpload(this)">
               </label>
               <div id="reelFilePreview" style="margin-top:0.5rem;display:none;aspect-ratio:16/9;background:#0a0c14;border:1px solid var(--border);border-radius:2px;overflow:hidden;"></div>
@@ -510,17 +510,17 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">お問い合わせフォーム送信先</div>
-          <div class="a-fg"><label class="a-label">Formspree エンドポイントURL</label><input class="a-input" id="s_formspree" placeholder="https://formspree.io/f/xxxxxxxx"><div class="a-hint">① <a href="https://formspree.io" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">formspree.io</a> で無料登録<br>② 「New Form」→ 受信メールアドレスを入力<br>③ 発行されたURLをここに貼る（月50件まで無料）</div></div>
+          <div class="a-card-title">ãåãåãããã©ã¼ã éä¿¡å</div>
+          <div class="a-fg"><label class="a-label">Formspree ã¨ã³ããã¤ã³ãURL</label><input class="a-input" id="s_formspree" placeholder="https://formspree.io/f/xxxxxxxx"><div class="a-hint">â  <a href="https://formspree.io" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">formspree.io</a> ã§ç¡æç»é²<br>â¡ ãNew Formãâ åä¿¡ã¡ã¼ã«ã¢ãã¬ã¹ãå¥å<br>â¢ çºè¡ãããURLãããã«è²¼ãï¼æ50ä»¶ã¾ã§ç¡æï¼</div></div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">SNSリンク</div>
+          <div class="a-card-title">SNSãªã³ã¯</div>
           <div class="a-fg"><label class="a-label">X URL</label><input class="a-input" id="s_x" placeholder="https://x.com/yourname"></div>
           <div class="a-fg"><label class="a-label">Instagram URL</label><input class="a-input" id="s_ig" placeholder="https://instagram.com/yourname"></div>
           <div class="a-fg"><label class="a-label">YouTube URL</label><input class="a-input" id="s_yt" placeholder="https://youtube.com/@yourname"></div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">アクセントカラー</div>
+          <div class="a-card-title">ã¢ã¯ã»ã³ãã«ã©ã¼</div>
           <div style="display:flex;gap:0.8rem;align-items:center;">
             <input class="a-input" id="s_color" placeholder="#e0ffff" style="max-width:130px;" oninput="syncColorPicker()">
             <input type="color" id="s_colorPicker" value="#e0ffff" style="width:40px;height:40px;border:none;background:none;cursor:pointer;padding:0;" oninput="syncColorInput()">
@@ -528,128 +528,128 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">フォント</div>
-          <div class="a-fg"><label class="a-label">見出し（MCZK等）</label>
+          <div class="a-card-title">ãã©ã³ã</div>
+          <div class="a-fg"><label class="a-label">è¦åºãï¼MCZKç­ï¼</label>
             <select class="a-font-select" id="s_font_heading">
-              <option value="Bebas Neue">Bebas Neue（デフォルト）</option>
+              <option value="Bebas Neue">Bebas Neueï¼ããã©ã«ãï¼</option>
               <option value="Anton">Anton</option>
               <option value="Black Han Sans">Black Han Sans</option>
             </select>
           </div>
-          <div class="a-fg"><label class="a-label">本文・ラベル</label>
+          <div class="a-fg"><label class="a-label">æ¬æã»ã©ãã«</label>
             <select class="a-font-select" id="s_font_body">
-              <option value="Noto Sans JP">Noto Sans JP（デフォルト）</option>
+              <option value="Noto Sans JP">Noto Sans JPï¼ããã©ã«ãï¼</option>
               <option value="M PLUS 1p">M PLUS 1p</option>
               <option value="Zen Kaku Gothic New">Zen Kaku Gothic New</option>
             </select>
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">その他テキスト</div>
-          <div class="a-fg"><label class="a-label">Contact サブテキスト</label><textarea class="a-textarea" id="s_contactsub" style="min-height:70px"></textarea></div>
+          <div class="a-card-title">ãã®ä»ãã­ã¹ã</div>
+          <div class="a-fg"><label class="a-label">Contact ãµããã­ã¹ã</label><textarea class="a-textarea" id="s_contactsub" style="min-height:70px"></textarea></div>
           <div class="a-row">
-            <div class="a-fg"><label class="a-label">CTAボタン1（WORKSなど）</label><input class="a-input" id="s_cta1" oninput="liveUpdateCTA()"></div>
-            <div class="a-fg"><label class="a-label">CTAボタン2（CONTACTなど）</label><input class="a-input" id="s_cta2" oninput="liveUpdateCTA()"></div>
+            <div class="a-fg"><label class="a-label">CTAãã¿ã³1ï¼WORKSãªã©ï¼</label><input class="a-input" id="s_cta1" oninput="liveUpdateCTA()"></div>
+            <div class="a-fg"><label class="a-label">CTAãã¿ã³2ï¼CONTACTãªã©ï¼</label><input class="a-input" id="s_cta2" oninput="liveUpdateCTA()"></div>
           </div>
         </div>
         <div class="a-actions">
-          <button class="a-btn a-btn-primary" onclick="saveSite()">保存して反映</button>
-          <button class="a-btn a-btn-danger" onclick="resetSite()">リセット</button>
+          <button class="a-btn a-btn-primary" onclick="saveSite()">ä¿å­ãã¦åæ </button>
+          <button class="a-btn a-btn-danger" onclick="resetSite()">ãªã»ãã</button>
         </div>
       </div>
 
       <div class="a-panel" id="tab-design">
-        <div class="a-section-title">デザイン設定</div>
+        <div class="a-section-title">ãã¶ã¤ã³è¨­å®</div>
         <div class="a-card">
-          <div class="a-card-title">セクション 表示/非表示</div>
+          <div class="a-card-title">ã»ã¯ã·ã§ã³ è¡¨ç¤º/éè¡¨ç¤º</div>
           <div class="a-fg" style="display:flex;flex-direction:column;gap:0.6rem;">
             <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="checkbox" id="d_show_about" onchange="saveDesign()" style="accent-color:var(--accent);width:15px;height:15px;"> About セクション表示
+              <input type="checkbox" id="d_show_about" onchange="saveDesign()" style="accent-color:var(--accent);width:15px;height:15px;"> About ã»ã¯ã·ã§ã³è¡¨ç¤º
             </label>
             <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="checkbox" id="d_show_contact" checked onchange="saveDesign()" style="accent-color:var(--accent);width:15px;height:15px;"> Contact セクション表示
+              <input type="checkbox" id="d_show_contact" checked onchange="saveDesign()" style="accent-color:var(--accent);width:15px;height:15px;"> Contact ã»ã¯ã·ã§ã³è¡¨ç¤º
             </label>
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">About セクション内容</div>
-          <div class="a-hint" style="margin-bottom:0.7rem;">表示ON時に使用。自己紹介・プロフィールなど。</div>
-          <div class="a-fg"><label class="a-label">見出し</label><input class="a-input" id="d_about_title" placeholder="About Me" value="About Me"></div>
-          <div class="a-fg"><label class="a-label">本文</label><textarea class="a-textarea" id="d_about_body" placeholder="自己紹介文..."></textarea></div>
-          <div class="a-fg"><label class="a-label">プロフィール画像URL（任意）</label><input class="a-input" id="d_about_img" placeholder="https://..."></div>
+          <div class="a-card-title">About ã»ã¯ã·ã§ã³åå®¹</div>
+          <div class="a-hint" style="margin-bottom:0.7rem;">è¡¨ç¤ºONæã«ä½¿ç¨ãèªå·±ç´¹ä»ã»ãã­ãã£ã¼ã«ãªã©ã</div>
+          <div class="a-fg"><label class="a-label">è¦åºã</label><input class="a-input" id="d_about_title" placeholder="About Me" value="About Me"></div>
+          <div class="a-fg"><label class="a-label">æ¬æ</label><textarea class="a-textarea" id="d_about_body" placeholder="èªå·±ç´¹ä»æ..."></textarea></div>
+          <div class="a-fg"><label class="a-label">ãã­ãã£ã¼ã«ç»åURLï¼ä»»æï¼</label><input class="a-input" id="d_about_img" placeholder="https://..."></div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">Hero レイアウト</div>
+          <div class="a-card-title">Hero ã¬ã¤ã¢ã¦ã</div>
           <div class="a-fg" style="display:flex;flex-direction:column;gap:0.5rem;">
             <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_hero_layout" value="split" id="d_hero_split" checked onchange="saveDesign()" style="accent-color:var(--accent);"> 左テキスト + 右Reel（現在）
+              <input type="radio" name="d_hero_layout" value="split" id="d_hero_split" checked onchange="saveDesign()" style="accent-color:var(--accent);"> å·¦ãã­ã¹ã + å³Reelï¼ç¾å¨ï¼
             </label>
             <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_hero_layout" value="center" id="d_hero_center" onchange="saveDesign()" style="accent-color:var(--accent);"> 中央寄せ（Reelなし）
+              <input type="radio" name="d_hero_layout" value="center" id="d_hero_center" onchange="saveDesign()" style="accent-color:var(--accent);"> ä¸­å¤®å¯ãï¼Reelãªãï¼
             </label>
             <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_hero_layout" value="fullwidth" id="d_hero_fullwidth" onchange="saveDesign()" style="accent-color:var(--accent);"> 全幅テキスト + 下Reel
+              <input type="radio" name="d_hero_layout" value="fullwidth" id="d_hero_fullwidth" onchange="saveDesign()" style="accent-color:var(--accent);"> å¨å¹ãã­ã¹ã + ä¸Reel
             </label>
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">Works グリッド列数</div>
+          <div class="a-card-title">Works ã°ãªããåæ°</div>
           <div class="a-fg" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_cols" value="auto" id="d_cols_auto" checked onchange="saveDesign()" style="accent-color:var(--accent);"> 自動（推奨）
+              <input type="radio" name="d_cols" value="auto" id="d_cols_auto" checked onchange="saveDesign()" style="accent-color:var(--accent);"> èªåï¼æ¨å¥¨ï¼
             </label>
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_cols" value="1" onchange="saveDesign()" style="accent-color:var(--accent);"> 1列
+              <input type="radio" name="d_cols" value="1" onchange="saveDesign()" style="accent-color:var(--accent);"> 1å
             </label>
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_cols" value="2" onchange="saveDesign()" style="accent-color:var(--accent);"> 2列
+              <input type="radio" name="d_cols" value="2" onchange="saveDesign()" style="accent-color:var(--accent);"> 2å
             </label>
             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);">
-              <input type="radio" name="d_cols" value="3" onchange="saveDesign()" style="accent-color:var(--accent);"> 3列
+              <input type="radio" name="d_cols" value="3" onchange="saveDesign()" style="accent-color:var(--accent);"> 3å
             </label>
           </div>
         </div>
         <div class="a-card">
-          <div class="a-card-title">セクション表示順</div>
-          <div class="a-hint" style="margin-bottom:0.7rem;">ドラッグで並び替え</div>
+          <div class="a-card-title">ã»ã¯ã·ã§ã³è¡¨ç¤ºé </div>
+          <div class="a-hint" style="margin-bottom:0.7rem;">ãã©ãã°ã§ä¸¦ã³æ¿ã</div>
           <div id="sectionOrder" style="display:flex;flex-direction:column;gap:0.4rem;">
-            <div class="section-order-item" draggable="true" data-sec="hero">⠿ Hero</div>
-            <div class="section-order-item" draggable="true" data-sec="about">⠿ About</div>
-            <div class="section-order-item" draggable="true" data-sec="work">⠿ Work</div>
-            <div class="section-order-item" draggable="true" data-sec="contact">⠿ Contact</div>
+            <div class="section-order-item" draggable="true" data-sec="hero">â ¿ Hero</div>
+            <div class="section-order-item" draggable="true" data-sec="about">â ¿ About</div>
+            <div class="section-order-item" draggable="true" data-sec="work">â ¿ Work</div>
+            <div class="section-order-item" draggable="true" data-sec="contact">â ¿ Contact</div>
           </div>
         </div>
         <div class="a-actions">
-          <button class="a-btn a-btn-primary" onclick="applyDesignAndPreview()">反映</button>
+          <button class="a-btn a-btn-primary" onclick="applyDesignAndPreview()">åæ </button>
         </div>
       </div>
 
       <div class="a-panel" id="tab-pw">
-        <div class="a-section-title">パスワード変更</div>
+        <div class="a-section-title">ãã¹ã¯ã¼ãå¤æ´</div>
         <div class="a-card">
-          <div class="a-fg"><label class="a-label">新しいパスワード</label><input class="a-input" type="password" id="newPw" style="max-width:240px"></div>
-          <div class="a-actions"><button class="a-btn a-btn-primary" onclick="changePW()">変更</button></div>
+          <div class="a-fg"><label class="a-label">æ°ãããã¹ã¯ã¼ã</label><input class="a-input" type="password" id="newPw" style="max-width:240px"></div>
+          <div class="a-actions"><button class="a-btn a-btn-primary" onclick="changePW()">å¤æ´</button></div>
         </div>
-        <div class="a-section-title" style="margin-top:1.4rem">データ管理</div>
+        <div class="a-section-title" style="margin-top:1.4rem">ãã¼ã¿ç®¡ç</div>
         <div class="a-card">
           <div class="a-actions">
-            <button class="a-btn a-btn-ghost" onclick="exportData()">JSONエクスポート</button>
-            <button class="a-btn a-btn-danger" onclick="clearAll()">全データ削除</button>
+            <button class="a-btn a-btn-ghost" onclick="exportData()">JSONã¨ã¯ã¹ãã¼ã</button>
+            <button class="a-btn a-btn-danger" onclick="clearAll()">å¨ãã¼ã¿åé¤</button>
           </div>
         </div>
-        <div class="a-section-title" style="margin-top:1.4rem">GitHub API 連携設定</div>
+        <div class="a-section-title" style="margin-top:1.4rem">GitHub API é£æºè¨­å®</div>
         <div class="a-card">
-          <div class="a-card-title">GitHub 自動 commit 設定</div>
-          <div class="a-hint" style="margin-bottom:1rem;padding:0.6rem 0.8rem;border:1px solid rgba(224,255,255,0.1);border-radius:2px;">「保存」実行時にGitHub APIでindex.htmlを自動commitします。<br>PATはlocalStorageに保存され、次回以降は入力不要です。</div>
-          <div class="a-fg"><label class="a-label">Personal Access Token (PAT)</label><input class="a-input" type="password" id="gh_pat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"><div class="a-hint">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) で発行。スコープ: <strong>repo</strong> にチェックを入れること。</div></div>
+          <div class="a-card-title">GitHub èªå commit è¨­å®</div>
+          <div class="a-hint" style="margin-bottom:1rem;padding:0.6rem 0.8rem;border:1px solid rgba(224,255,255,0.1);border-radius:2px;">ãä¿å­ãå®è¡æã«GitHub APIã§index.htmlãèªåcommitãã¾ãã<br>PATã¯localStorageã«ä¿å­ãããæ¬¡åä»¥éã¯å¥åä¸è¦ã§ãã</div>
+          <div class="a-fg"><label class="a-label">Personal Access Token (PAT)</label><input class="a-input" type="password" id="gh_pat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"><div class="a-hint">GitHub â Settings â Developer settings â Personal access tokens â Tokens (classic) ã§çºè¡ãã¹ã³ã¼ã: <strong>repo</strong> ã«ãã§ãã¯ãå¥ãããã¨ã</div></div>
           <div class="a-row">
-            <div class="a-fg"><label class="a-label">Owner（ユーザー名）</label><input class="a-input" id="gh_owner" placeholder="mczk-o"></div>
-            <div class="a-fg"><label class="a-label">Repository名</label><input class="a-input" id="gh_repo" placeholder="mczk.github.io"></div>
+            <div class="a-fg"><label class="a-label">Ownerï¼ã¦ã¼ã¶ã¼åï¼</label><input class="a-input" id="gh_owner" placeholder="mczk-o"></div>
+            <div class="a-fg"><label class="a-label">Repositoryå</label><input class="a-input" id="gh_repo" placeholder="mczk.github.io"></div>
           </div>
-          <div class="a-fg"><label class="a-label">ファイルパス</label><input class="a-input" id="gh_path" placeholder="index.html"><div class="a-hint">通常は index.html のままでOK。</div></div>
+          <div class="a-fg"><label class="a-label">ãã¡ã¤ã«ãã¹</label><input class="a-input" id="gh_path" placeholder="index.html"><div class="a-hint">éå¸¸ã¯ index.html ã®ã¾ã¾ã§OKã</div></div>
           <div class="a-actions">
-            <button class="a-btn a-btn-primary" onclick="saveGitHubConfig()">設定を保存</button>
-            <button class="a-btn a-btn-ghost" onclick="testGitHubConfig()">接続テスト</button>
+            <button class="a-btn a-btn-primary" onclick="saveGitHubConfig()">è¨­å®ãä¿å­</button>
+            <button class="a-btn a-btn-ghost" onclick="testGitHubConfig()">æ¥ç¶ãã¹ã</button>
           </div>
         </div>
       </div>
@@ -660,8 +660,8 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
         <div class="preview-toolbar">
           <span style="font-family:'Space Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:0.1em;margin-right:0.4rem;">PREVIEW</span>
           <button class="preview-size-btn active" onclick="setPreviewSize('pc',this)" title="PC">PC</button>
-          <button class="preview-size-btn" onclick="setPreviewSize('tablet',this)" title="タブレット">TAB</button>
-          <button class="preview-size-btn" onclick="setPreviewSize('sp',this)" title="スマートフォン">SP</button>
+          <button class="preview-size-btn" onclick="setPreviewSize('tablet',this)" title="ã¿ãã¬ãã">TAB</button>
+          <button class="preview-size-btn" onclick="setPreviewSize('sp',this)" title="ã¹ãã¼ããã©ã³">SP</button>
           <span style="font-family:'Space Mono',monospace;font-size:0.56rem;color:var(--muted);margin-left:0.4rem;" id="previewSizeLabel">Full width</span>
         </div>
         <div class="preview-viewport" id="previewViewport">
@@ -670,8 +670,8 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
           </div>
         </div>
       </div>
-      <div class="preview-label">LIVE PREVIEW — クリックで直接編集</div>
-      <div class="edit-hint" id="editHint">✎ テキストをクリックして編集</div>
+      <div class="preview-label">LIVE PREVIEW â ã¯ãªãã¯ã§ç´æ¥ç·¨é</div>
+      <div class="edit-hint" id="editHint">â ãã­ã¹ããã¯ãªãã¯ãã¦ç·¨é</div>
     </div>
   </div>
 </div>
@@ -706,7 +706,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       <div class="hero-reel">
         <div class="hero-reel-wrap" id="heroReelWrap">
           <div class="hero-reel-placeholder" id="heroReelPh">
-            <div class="hero-reel-play">▶</div>
+            <div class="hero-reel-play">â¶</div>
             <div class="hero-reel-label">Reel</div>
           </div>
         </div>
@@ -733,7 +733,7 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       </div>
       <div class="filter-tabs">
         <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="personal">自主制作</button>
+        <button class="filter-btn" data-filter="personal">èªä¸»å¶ä½</button>
         <button class="filter-btn" data-filter="mv">MV</button>
         <button class="filter-btn" data-filter="motion">Motion</button>
         <button class="filter-btn" data-filter="three">3DCG</button>
@@ -749,15 +749,15 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       <h2 class="contact-title">GET IN<br>TOUCH</h2>
       <p class="contact-sub" id="pub_contactsub"></p>
       <form id="contactForm">
-        <div class="form-group"><label class="form-label">お名前</label><input class="form-input" type="text" name="name" placeholder="山田 太郎" required></div>
-        <div class="form-group"><label class="form-label">メール</label><input class="form-input" type="email" name="email" placeholder="example@mail.com" required></div>
-        <div class="form-group"><label class="form-label">依頼内容</label>
-          <select class="form-select" name="type"><option value="">選択してください</option><option>MV制作</option><option>企業広告映像</option><option>ライブ背景映像</option><option>SNS用映像</option><option>その他</option></select>
+        <div class="form-group"><label class="form-label">ãåå</label><input class="form-input" type="text" name="name" placeholder="å±±ç° å¤ªé" required></div>
+        <div class="form-group"><label class="form-label">ã¡ã¼ã«</label><input class="form-input" type="email" name="email" placeholder="example@mail.com" required></div>
+        <div class="form-group"><label class="form-label">ä¾é ¼åå®¹</label>
+          <select class="form-select" name="type"><option value="">é¸æãã¦ãã ãã</option><option>MVå¶ä½</option><option>ä¼æ¥­åºåæ å</option><option>ã©ã¤ãèæ¯æ å</option><option>SNSç¨æ å</option><option>ãã®ä»</option></select>
         </div>
-        <div class="form-group"><label class="form-label">メッセージ</label><textarea class="form-textarea" name="message" placeholder="内容・納期・予算などをお聞かせください。"></textarea></div>
-        <button type="submit" class="form-submit">送信 →</button>
+        <div class="form-group"><label class="form-label">ã¡ãã»ã¼ã¸</label><textarea class="form-textarea" name="message" placeholder="åå®¹ã»ç´æã»äºç®ãªã©ããèãããã ããã"></textarea></div>
+        <button type="submit" class="form-submit">éä¿¡ â</button>
       </form>
-      <div class="form-success" id="formSuccess"><div class="form-success-icon">✓</div><div class="form-success-text">送信しました。近日中にご連絡いたします。</div></div>
+      <div class="form-success" id="formSuccess"><div class="form-success-icon">â</div><div class="form-success-text">éä¿¡ãã¾ãããè¿æ¥ä¸­ã«ãé£çµ¡ãããã¾ãã</div></div>
     </div>
   </section>
 
@@ -768,13 +768,13 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
       <a id="pub_ig" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
       <a id="pub_yt" href="#" target="_blank" rel="noopener noreferrer">YouTube</a>
     </div>
-    <div class="footer-copy">© 2026 mczk</div>
+    <div class="footer-copy">Â© 2026 mczk</div>
   </footer>
 </div>
 
 <div class="modal-bg" id="modal" onclick="closeModal(event)">
   <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">â</button>
     <div class="modal-cat-label" id="modal-cat"></div>
     <div class="modal-title" id="modal-title"></div>
     <div class="modal-media" id="modal-media"></div>
@@ -786,10 +786,10 @@ footer{border-top:1px solid var(--border);padding:2.2rem 5vw;display:flex;justif
 <script>
 const KEY_W='mczk_works',KEY_PW='mczk_pw',KEY_S='mczk_site',KEY_D='mczk_design';
 const DEFAULT_PW='mczk0000';
-const DEFAULT_SITE={eyebrow:'3D CG Creator',herosub:'3DCGとモーションで映像をつくっています。',cta1:'Works',cta2:'Contact',contactsub:'お仕事のご依頼・ご相談はこちらからどうぞ。\n2〜3営業日以内にご返信します。',x:'#',ig:'#',yt:'#',reel:'',color:'#e0ffff',font_heading:'Bebas Neue',font_body:'Noto Sans JP',formspree:'',site_title:'',site_desc:'',ogp_image:''};
+const DEFAULT_SITE={eyebrow:'3D CG Creator',herosub:'3DCGã¨ã¢ã¼ã·ã§ã³ã§æ åãã¤ãã£ã¦ãã¾ãã',cta1:'Works',cta2:'Contact',contactsub:'ãä»äºã®ãä¾é ¼ã»ãç¸è«ã¯ãã¡ãããã©ããã\n2ã3å¶æ¥­æ¥ä»¥åã«ãè¿ä¿¡ãã¾ãã',x:'#',ig:'#',yt:'#',reel:'',color:'#e0ffff',font_heading:'Bebas Neue',font_body:'Noto Sans JP',formspree:'',site_title:'',site_desc:'',ogp_image:''};
 const DEFAULT_DESIGN={show_about:false,show_contact:true,hero_layout:'split',cols:'auto',section_order:['hero','about','work','contact'],about_title:'About Me',about_body:'',about_img:''};
-const DEFAULT_WORKS=[{id:1000,cat:'personal',title:'自主制作 01',videoUrl:'',thumb:'',body:'ここに説明文を書いてください。',bodyHtml:'',tags:['Blender','After Effects'],published:true,createdAt:1000}];
-const CAT={personal:'自主制作',mv:'MV',motion:'Motion',three:'3DCG',live:'Live VJ'};
+const DEFAULT_WORKS=[{id:1000,cat:'personal',title:'èªä¸»å¶ä½ 01',videoUrl:'',thumb:'',body:'ããã«èª¬ææãæ¸ãã¦ãã ããã',bodyHtml:'',tags:['Blender','After Effects'],published:true,createdAt:1000}];
+const CAT={personal:'èªä¸»å¶ä½',mv:'MV',motion:'Motion',three:'3DCG',live:'Live VJ'};
 function getPW(){return localStorage.getItem(KEY_PW)||DEFAULT_PW;}
 function getWorks(){const r=localStorage.getItem(KEY_W);return r?JSON.parse(r):JSON.parse(JSON.stringify(DEFAULT_WORKS));}
 function saveWorks(w){localStorage.setItem(KEY_W,JSON.stringify(w));}
@@ -814,7 +814,7 @@ function applyReel(url){
   const wrap=document.getElementById('heroReelWrap');if(!wrap)return;
   const safeUrl=url&&url.trim()&&(url.startsWith('https://')||url.startsWith('http://'))?url.trim():null;
   if(safeUrl){wrap.innerHTML=`<iframe src="${escapeHtml(safeUrl)}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;}
-  else{wrap.innerHTML=`<div class="hero-reel-placeholder"><div class="hero-reel-play">▶</div><div class="hero-reel-label">Reel</div></div>`;}
+  else{wrap.innerHTML=`<div class="hero-reel-placeholder"><div class="hero-reel-play">â¶</div><div class="hero-reel-label">Reel</div></div>`;}
 }
 function applyHeroLayout(layout){
   const hi=document.getElementById('hero');const inner=hi?hi.querySelector('.hero-inner'):null;
@@ -871,7 +871,7 @@ function applyPublic(site){
     if(f)f.href=site[k]||'#';if(h)h.href=site[k]||'#';
   });
   applyReel(site.reel);
-  // サイトタイトル・OGP
+  // ãµã¤ãã¿ã¤ãã«ã»OGP
   const titleStr=site.site_title||'mczk';
   document.title=titleStr;
   const setMeta=(id,val)=>{const el=document.getElementById(id);if(el)el.setAttribute(el.hasAttribute('content')?'content':'content',val);};
@@ -892,11 +892,11 @@ function getSortedWorks(){
 
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-// ── 動画URL自動変換 ──
+// ââ åç»URLèªåå¤æ ââ
 function toEmbedUrl(url){
   if(!url)return '';
   url=url.trim();
-  // すでにembed形式ならそのまま
+  // ãã§ã«embedå½¢å¼ãªããã®ã¾ã¾
   if(url.includes('/embed/'))return url;
   // YouTube: watch?v= / youtu.be / shorts
   let m;
@@ -905,12 +905,12 @@ function toEmbedUrl(url){
   // Vimeo: vimeo.com/123456789
   m=url.match(/vimeo\.com\/(\d+)/);
   if(m)return `https://player.vimeo.com/video/${m[1]}`;
-  // Twitter/X: t.co / x.com / twitter.com → 埋め込み不可のためそのまま返す
-  // その他はそのまま返す（nicovideo等）
+  // Twitter/X: t.co / x.com / twitter.com â åãè¾¼ã¿ä¸å¯ã®ãããã®ã¾ã¾è¿ã
+  // ãã®ä»ã¯ãã®ã¾ã¾è¿ãï¼nicovideoç­ï¼
   return url;
 }
 
-// ── 動画タブ切り替え ──
+// ââ åç»ã¿ãåãæ¿ã ââ
 function switchVideoTab(mode){
   const urlTab=document.getElementById('videoTabUrl');
   const fileTab=document.getElementById('videoTabFile');
@@ -927,7 +927,7 @@ function switchVideoTab(mode){
   }
 }
 
-// ── URL入力時プレビュー & 自動変換表示 ──
+// ââ URLå¥åæãã¬ãã¥ã¼ & èªåå¤æè¡¨ç¤º ââ
 function previewVideoUrl(rawVal){
   const embed=toEmbedUrl(rawVal);
   const prev=document.getElementById('videoUrlPreview');
@@ -935,7 +935,7 @@ function previewVideoUrl(rawVal){
   if(embed&&embed.startsWith('http')){
     prev.style.display='block';
     prev.innerHTML=`<iframe src="${escapeHtml(embed)}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
-    // 変換されたならフィールドに反映
+    // å¤æããããªããã£ã¼ã«ãã«åæ 
     if(embed!==rawVal.trim()){
       const inp=document.getElementById('f_video');
       if(inp)inp.value=embed;
@@ -945,14 +945,14 @@ function previewVideoUrl(rawVal){
   }
 }
 
-// ── 動画ファイルアップロード（Base64） ──
+// ââ åç»ãã¡ã¤ã«ã¢ããã­ã¼ãï¼Base64ï¼ ââ
 function handleVideoUpload(input){
   const file=input.files[0];if(!file)return;
   const maxMB=100;
-  if(file.size>maxMB*1024*1024){alert(`ファイルが大きすぎます（上限${maxMB}MB）。`);input.value='';return;}
+  if(file.size>maxMB*1024*1024){alert(`ãã¡ã¤ã«ãå¤§ãããã¾ãï¼ä¸é${maxMB}MBï¼ã`);input.value='';return;}
   const nameEl=document.getElementById('videoFileName');
   const prevEl=document.getElementById('videoFilePreview');
-  if(nameEl){nameEl.style.display='block';nameEl.textContent=`読み込み中… ${(file.size/1024/1024).toFixed(1)}MB`;}
+  if(nameEl){nameEl.style.display='block';nameEl.textContent=`èª­ã¿è¾¼ã¿ä¸­â¦ ${(file.size/1024/1024).toFixed(1)}MB`;}
   const reader=new FileReader();
   reader.onload=e=>{
     const dataUrl=e.target.result;
@@ -961,9 +961,9 @@ function handleVideoUpload(input){
       prevEl.style.display='block';
       prevEl.innerHTML=`<video src="${dataUrl}" style="width:100%;height:100%;object-fit:contain;" controls></video>`;
     }
-    if(nameEl)nameEl.textContent=`✓ ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
+    if(nameEl)nameEl.textContent=`â ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
   };
-  reader.onerror=()=>{alert('読み込みに失敗しました。');if(nameEl)nameEl.style.display='none';};
+  reader.onerror=()=>{alert('èª­ã¿è¾¼ã¿ã«å¤±æãã¾ããã');if(nameEl)nameEl.style.display='none';};
   reader.readAsDataURL(file);
 }
 
@@ -975,12 +975,12 @@ function renderPublic(filter){
     if(w.videoData){media=`<video src="${w.videoData}" style="width:100%;height:100%;object-fit:cover;" muted loop playsinline></video>`;}
     else if(w.videoUrl){media=`<iframe src="${escapeHtml(w.videoUrl)}?autoplay=0" style="width:100%;height:100%;border:none;pointer-events:none"></iframe>`;}
     else if(w.thumb){media=`<img src="${escapeHtml(w.thumb)}" alt="${escapeHtml(w.title)}">`;}
-    else{media=`<div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">${escapeHtml(CAT[w.cat]||w.cat)}</div></div>`;}
+    else{media=`<div class="work-placeholder"><div class="work-play">â¶</div><div class="work-ph-label">${escapeHtml(CAT[w.cat]||w.cat)}</div></div>`;}
     return `<div class="work-card" onclick="openModal('${escapeHtml(w.id)}')">
       <div class="work-card-media">${media}</div>
       <div class="work-card-body"><div class="work-cat">${escapeHtml(CAT[w.cat]||w.cat)}</div><div class="work-card-title">${escapeHtml(w.title)}</div><div class="work-card-desc">${escapeHtml((w.body||'').slice(0,80))}</div></div>
     </div>`;
-  }).join('')||'<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;">作品がありません。</div>';
+  }).join('')||'<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;">ä½åãããã¾ããã</div>';
   const d=getDesign();applyWorkCols(d.cols||'auto');
 }
 
@@ -999,7 +999,7 @@ function openModal(id){
   if(w.videoData)m.innerHTML=`<video src="${w.videoData}" style="width:100%;height:100%;object-fit:contain;" controls></video>`;
   else if(w.videoUrl)m.innerHTML=`<iframe src="${w.videoUrl}" allowfullscreen></iframe>`;
   else if(w.thumb)m.innerHTML=`<img src="${w.thumb}" alt="${w.title}">`;
-  else m.innerHTML=`<div class="modal-media-ph">動画またはサムネイルを設定してください</div>`;
+  else m.innerHTML=`<div class="modal-media-ph">åç»ã¾ãã¯ãµã ãã¤ã«ãè¨­å®ãã¦ãã ãã</div>`;
   document.getElementById('modal-tags').innerHTML=(w.tags||[]).map(t=>`<span class="modal-tag-chip">${escapeHtml(t)}</span>`).join('');
   document.getElementById('modal').classList.add('open');
 }
@@ -1009,27 +1009,27 @@ if(cf)cf.addEventListener('submit',async e=>{
   e.preventDefault();
   const url=getSite().formspree||'';
   if(!url||!url.startsWith('https://formspree.io/')){
-    alert('送信先が設定されていません。Admin→サイト設定でFormspree URLを登録してください。');return;
+    alert('éä¿¡åãè¨­å®ããã¦ãã¾ãããAdminâãµã¤ãè¨­å®ã§Formspree URLãç»é²ãã¦ãã ããã');return;
   }
   const btn=cf.querySelector('.form-submit');
-  btn.disabled=true;btn.textContent='送信中…';
+  btn.disabled=true;btn.textContent='éä¿¡ä¸­â¦';
   try{
     const res=await fetch(url,{method:'POST',body:new FormData(cf),headers:{Accept:'application/json'}});
     if(res.ok){cf.style.display='none';document.getElementById('formSuccess').style.display='block';}
-    else{alert('送信に失敗しました。しばらくしてからお試しください。');btn.disabled=false;btn.textContent='送信 →';}
-  }catch(err){alert('ネットワークエラーが発生しました。');btn.disabled=false;btn.textContent='送信 →';}
+    else{alert('éä¿¡ã«å¤±æãã¾ããããã°ãããã¦ãããè©¦ããã ããã');btn.disabled=false;btn.textContent='éä¿¡ â';}
+  }catch(err){alert('ãããã¯ã¼ã¯ã¨ã©ã¼ãçºçãã¾ããã');btn.disabled=false;btn.textContent='éä¿¡ â';}
 });
 function initReveal(){const obs=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));}
 
-// ── RICH EDITOR ──
+// ââ RICH EDITOR ââ
 function richCmd(cmd){document.getElementById('richEditor').focus();document.execCommand(cmd,false,null);}
 function insertRichLink(){
-  const url=prompt('リンクURLを入力:');if(!url)return;
+  const url=prompt('ãªã³ã¯URLãå¥å:');if(!url)return;
   document.getElementById('richEditor').focus();
   document.execCommand('createLink',false,url);
 }
 function insertRichVideo(){
-  const url=prompt('動画embed URLを入力（YouTube/Vimeo）:');if(!url)return;
+  const url=prompt('åç»embed URLãå¥åï¼YouTube/Vimeoï¼:');if(!url)return;
   const el=document.getElementById('richEditor');
   el.focus();
   const iframe=document.createElement('iframe');
@@ -1047,7 +1047,7 @@ function insertRichImage(input){
   reader.readAsDataURL(file);
   input.value='';
 }
-// コピペ画像対応
+// ã³ããç»åå¯¾å¿
 document.addEventListener('DOMContentLoaded',()=>{
   const ed=document.getElementById('richEditor');
   if(ed){
@@ -1067,7 +1067,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-// ── ADMIN ──
+// ââ ADMIN ââ
 function checkPW(){
   if(document.getElementById('pwInput').value===getPW()){
     document.getElementById('pwScreen').style.display='none';
@@ -1098,7 +1098,7 @@ function initWYSIWYG(){
       el.contentEditable='true';
       el.dir='ltr';
       el.style.unicodeBidi='plaintext';
-      // <a>タグのRTLバグ対策：keydownで文字を末尾に直接挿入
+      // <a>ã¿ã°ã®RTLãã°å¯¾ç­ï¼keydownã§æå­ãæ«å°¾ã«ç´æ¥æ¿å¥
       if(el.tagName==='A'){
         el.addEventListener('keydown',function(ev){
           if(ev.key.length===1&&!ev.ctrlKey&&!ev.metaKey){
@@ -1128,7 +1128,7 @@ function initWYSIWYG(){
   });
   clone.querySelectorAll('iframe').forEach(f=>f.style.pointerEvents='none');
   clone.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
-  // CTAボタン：クリックでprompt編集（<a>タグRTLバグ完全回避）
+  // CTAãã¿ã³ï¼ã¯ãªãã¯ã§promptç·¨éï¼<a>ã¿ã°RTLãã°å®å¨åé¿ï¼
   ['pub_cta1','pub_cta2'].forEach(cid=>{
     const btn=clone.querySelector('#'+cid);
     if(!btn)return;
@@ -1137,7 +1137,7 @@ function initWYSIWYG(){
     btn.addEventListener('click',function(ev){
       ev.preventDefault();
       const cur=btn.textContent.trim();
-      const val=window.prompt('ボタンテキストを入力',cur);
+      const val=window.prompt('ãã¿ã³ãã­ã¹ããå¥å',cur);
       if(val===null)return;
       btn.textContent=val;
       const s=getSite();
@@ -1163,12 +1163,12 @@ function renderAdminPreviewWorks(clone,filter){
     if(w.videoData){media=`<video src="${w.videoData}" style="width:100%;height:100%;object-fit:cover;" muted loop playsinline></video>`;}
     else if(w.videoUrl){media=`<iframe src="${escapeHtml(w.videoUrl)}?autoplay=0" style="width:100%;height:100%;border:none;pointer-events:none"></iframe>`;}
     else if(w.thumb){media=`<img src="${escapeHtml(w.thumb)}" alt="${escapeHtml(w.title)}">`;}
-    else{media=`<div class="work-placeholder"><div class="work-play">▶</div><div class="work-ph-label">${escapeHtml(CAT[w.cat]||w.cat)}</div></div>`;}
+    else{media=`<div class="work-placeholder"><div class="work-play">â¶</div><div class="work-ph-label">${escapeHtml(CAT[w.cat]||w.cat)}</div></div>`;}
     return `<div class="work-card">
       <div class="work-card-media">${media}</div>
       <div class="work-card-body"><div class="work-cat">${escapeHtml(CAT[w.cat]||w.cat)}</div><div class="work-card-title">${escapeHtml(w.title)}</div><div class="work-card-desc">${escapeHtml((w.body||'').slice(0,80))}</div></div>
     </div>`;
-  }).join('')||'<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;">作品がありません。</div>';
+  }).join('')||'<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;">ä½åãããã¾ããã</div>';
 }
 
 function liveUpdateCTA(){
@@ -1178,7 +1178,7 @@ function liveUpdateCTA(){
   s.cta1=v1;s.cta2=v2;saveSiteData(s);
   const e1=document.getElementById('pub_cta1');const e2=document.getElementById('pub_cta2');
   if(e1)e1.textContent=v1;if(e2)e2.textContent=v2;
-  // adminPreview内も更新
+  // adminPreviewåãæ´æ°
   const pr=document.getElementById('adminPreviewInner');
   if(pr){const c1=pr.querySelector('#pub_cta1');const c2=pr.querySelector('#pub_cta2');if(c1)c1.textContent=v1;if(c2)c2.textContent=v2;}
 }
@@ -1194,17 +1194,17 @@ function refreshAdminPreview(){applyPublic(getSite());applyDesign(getDesign());i
 
 function renderAdminWL(){
   const works=getSortedWorks();const el=document.getElementById('adminWL');
-  if(!works.length){el.innerHTML='<div style="color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">作品がありません。</div>';return;}
+  if(!works.length){el.innerHTML='<div style="color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">ä½åãããã¾ããã</div>';return;}
   const origWorks=getWorks();
   el.innerHTML=works.map(w=>{
     const origIdx=origWorks.findIndex(x=>x.id===w.id);
     const isPub=w.published!==false;
     return `<div class="wl-item" draggable="true" data-id="${w.id}">
-      <span style="color:var(--muted);font-size:0.8rem;margin-right:0.2rem;cursor:grab;">⠿</span>
+      <span style="color:var(--muted);font-size:0.8rem;margin-right:0.2rem;cursor:grab;">â ¿</span>
       <div class="wl-cat">${CAT[w.cat]||w.cat}</div>
       <div class="wl-title">${w.title}</div>
-      <span class="${isPub?'wl-pub-badge':'wl-draft-badge'}" onclick="togglePublished(${origIdx})" title="クリックで公開/下書き切り替え">${isPub?'公開':'下書き'}</span>
-      <div class="wl-actions"><button class="ib ib-edit" onclick="editWork(${origIdx})">編集</button><button class="ib ib-del" onclick="deleteWork(${origIdx})">削除</button></div>
+      <span class="${isPub?'wl-pub-badge':'wl-draft-badge'}" onclick="togglePublished(${origIdx})" title="ã¯ãªãã¯ã§å¬é/ä¸æ¸ãåãæ¿ã">${isPub?'å¬é':'ä¸æ¸ã'}</span>
+      <div class="wl-actions"><button class="ib ib-edit" onclick="editWork(${origIdx})">ç·¨é</button><button class="ib ib-del" onclick="deleteWork(${origIdx})">åé¤</button></div>
     </div>`;
   }).join('');
   initWorkDragSort();
@@ -1225,9 +1225,9 @@ function initWorkDragSort(){
     item.addEventListener('dragend',()=>{
       item.classList.remove('dragging');dragging=null;
       container.querySelectorAll('.wl-item').forEach(i=>i.classList.remove('drag-over-wl'));
-      // 並び替え結果を保存
+      // ä¸¦ã³æ¿ãçµæãä¿å­
       const sortKey=document.getElementById('sortKey')?.value||'default';
-      if(sortKey!=='default')return; // 追加順以外は保存しない
+      if(sortKey!=='default')return; // è¿½å é ä»¥å¤ã¯ä¿å­ããªã
       const newOrder=[...container.querySelectorAll('.wl-item')].map(el=>Number(el.dataset.id));
       const works=getWorks();
       const reordered=newOrder.map(id=>works.find(w=>w.id===id)).filter(Boolean);
@@ -1247,7 +1247,7 @@ function initWorkDragSort(){
 }
 function editWork(i){
   const w=getWorks()[i];
-  document.getElementById('fmLabel').textContent='編集中';
+  document.getElementById('fmLabel').textContent='ç·¨éä¸­';
   document.getElementById('fmLabel').scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('editIdx').value=i;
   document.getElementById('f_title').value=w.title;
@@ -1256,7 +1256,7 @@ function editWork(i){
   document.getElementById('f_published').checked=w.published!==false;
   document.getElementById('richEditor').innerHTML=w.bodyHtml||w.body||'';
   document.getElementById('f_thumb').value=w.thumb||'';
-  // 動画: アップロードかURL判定
+  // åç»: ã¢ããã­ã¼ããURLå¤å®
   if(w.videoData){
     switchVideoTab('file');
     document.getElementById('f_video_data').value=w.videoData;
@@ -1264,7 +1264,7 @@ function editWork(i){
     const prevEl=document.getElementById('videoFilePreview');
     const nameEl=document.getElementById('videoFileName');
     if(prevEl){prevEl.style.display='block';prevEl.innerHTML=`<video src="${w.videoData}" style="width:100%;height:100%;object-fit:contain;" controls></video>`;}
-    if(nameEl){nameEl.style.display='block';nameEl.textContent='✓ アップロード済み動画';}
+    if(nameEl){nameEl.style.display='block';nameEl.textContent='â ã¢ããã­ã¼ãæ¸ã¿åç»';}
   }else{
     switchVideoTab('url');
     document.getElementById('f_video').value=w.videoUrl||'';
@@ -1272,13 +1272,13 @@ function editWork(i){
     if(w.videoUrl)previewVideoUrl(w.videoUrl);
   }
 }
-function deleteWork(i){if(!confirm('削除しますか？'))return;const works=getWorks();works.splice(i,1);saveWorks(works);renderAdminWL();refreshAdminPreview();}
+function deleteWork(i){if(!confirm('åé¤ãã¾ããï¼'))return;const works=getWorks();works.splice(i,1);saveWorks(works);renderAdminWL();refreshAdminPreview();}
 function saveWork(){
-  const title=document.getElementById('f_title').value.trim();if(!title){alert('タイトルを入力してください');return;}
+  const title=document.getElementById('f_title').value.trim();if(!title){alert('ã¿ã¤ãã«ãå¥åãã¦ãã ãã');return;}
   const works=getWorks();const idx=document.getElementById('editIdx').value;
   const bodyHtml=document.getElementById('richEditor').innerHTML;
   const bodyText=stripHtml(bodyHtml);
-  // 動画: アップロードタブが表示中かで分岐
+  // åç»: ã¢ããã­ã¼ãã¿ããè¡¨ç¤ºä¸­ãã§åå²
   const fileTabVisible=document.getElementById('videoInputFile').style.display!=='none';
   const videoData=fileTabVisible?document.getElementById('f_video_data').value.trim():'';
   const rawUrl=document.getElementById('f_video').value.trim();
@@ -1294,10 +1294,10 @@ function saveWork(){
     createdAt:idx!==''?(works[idx].createdAt||works[idx].id):Date.now()
   };
   if(idx!=='')works[idx]=entry;else works.push(entry);
-  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('Works を保存しました');
+  saveWorks(works);renderAdminWL();resetForm();refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('Works ãä¿å­ãã¾ãã');
 }
 function resetForm(){
-  document.getElementById('fmLabel').textContent='新規追加';
+  document.getElementById('fmLabel').textContent='æ°è¦è¿½å ';
   document.getElementById('editIdx').value='';
   ['f_title','f_video','f_thumb','f_tags','f_video_data'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f_cat').value='personal';
@@ -1346,7 +1346,7 @@ function saveDesign(){
   d.section_order=[...document.querySelectorAll('#sectionOrder .section-order-item')].map(el=>el.dataset.sec);
   saveDesignData(d);
 }
-function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('デザイン設定を保存しました');}
+function applyDesignAndPreview(){saveDesign();applyDesign(getDesign());refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('ãã¶ã¤ã³è¨­å®ãä¿å­ãã¾ãã');}
 
 // Section drag sort
 function initDragSort(){
@@ -1372,12 +1372,12 @@ function syncColorInput(){const v=document.getElementById('s_colorPicker').value
 function saveSite(){
   const fields=['reel','contactsub','cta1','cta2','x','ig','yt','color','font_heading','font_body','formspree','site_title','site_desc','ogp_image'];
   const s=getSite();fields.forEach(k=>{const el=document.getElementById('s_'+k);if(el)s[k]=el.value;});
-  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('サイト設定を保存しました');
+  saveSiteData(s);applyColor(s.color||'#e0ffff');applyFonts(s.font_heading,s.font_body);applyPublic(s);refreshAdminPreview();if(window.saveToFirestore)window.saveToFirestore();commitToGitHub('ãµã¤ãè¨­å®ãä¿å­ãã¾ãã');
 }
-function resetSite(){if(!confirm('リセットしますか？'))return;localStorage.removeItem(KEY_S);loadSiteForm();refreshAdminPreview();}
-function changePW(){const np=document.getElementById('newPw').value.trim();if(!np){alert('入力してください');return;}localStorage.setItem(KEY_PW,np);document.getElementById('newPw').value='';alert('変更しました');}
+function resetSite(){if(!confirm('ãªã»ãããã¾ããï¼'))return;localStorage.removeItem(KEY_S);loadSiteForm();refreshAdminPreview();}
+function changePW(){const np=document.getElementById('newPw').value.trim();if(!np){alert('å¥åãã¦ãã ãã');return;}localStorage.setItem(KEY_PW,np);document.getElementById('newPw').value='';alert('å¤æ´ãã¾ãã');}
 function exportData(){const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify({works:getWorks(),site:getSite(),design:getDesign()},null,2));a.download='mczk_backup.json';a.click();}
-function clearAll(){if(!confirm('全データを削除しますか？'))return;[KEY_W,KEY_S,KEY_D].forEach(k=>localStorage.removeItem(k));renderAdminWL();refreshAdminPreview();alert('削除しました');}
+function clearAll(){if(!confirm('å¨ãã¼ã¿ãåé¤ãã¾ããï¼'))return;[KEY_W,KEY_S,KEY_D].forEach(k=>localStorage.removeItem(k));renderAdminWL();refreshAdminPreview();alert('åé¤ãã¾ãã');}
 
 const _initFn=()=>{
   const site=getSite();const design=getDesign();
@@ -1403,12 +1403,12 @@ const _initFn=()=>{
     window.scrollTo(0,0);
   };
 
-  // pwInputでEnter、ESCで閉じる
+  // pwInputã§EnterãESCã§éãã
   document.getElementById('pwInput').addEventListener('keydown',e=>{
     if(e.key==='Enter')checkPW();
     if(e.key==='Escape')closeAdmin();
   });
-  // ESCキーグローバル（PW画面表示中のみ）
+  // ESCã­ã¼ã°ã­ã¼ãã«ï¼PWç»é¢è¡¨ç¤ºä¸­ã®ã¿ï¼
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'&&document.getElementById('pwScreen').style.display==='flex')closeAdmin();
   });
@@ -1416,13 +1416,13 @@ const _initFn=()=>{
   if(window.location.search.includes('admin')){window._openAdmin();}
   else{applyPublic(site);renderPublic('all');applyDesign(design);initReveal();}
 
-  // 公開サイトのロゴクリックでAdmin
+  // å¬éãµã¤ãã®ã­ã´ã¯ãªãã¯ã§Admin
   const nl=document.getElementById('navLogo');
   if(nl){nl.addEventListener('click',function(e){e.preventDefault();window._openAdmin();});}
 };
 if(document.readyState==='complete'||document.readyState==='interactive'){_initFn();}else{window.addEventListener('load',_initFn);}
 
-// ===== GitHub API 連携 =====
+// ===== GitHub API é£æº =====
 const KEY_GH = 'mczk_gh';
 
 function getGitHubConfig(){
@@ -1452,36 +1452,36 @@ function saveGitHubConfig(){
     repo: document.getElementById('gh_repo').value.trim(),
     path: document.getElementById('gh_path').value.trim()
   };
-  if(!cfg.pat){ showToast('PATを入力してください', 'error'); return; }
-  if(!cfg.owner || !cfg.repo || !cfg.path){ showToast('owner / repo / path を入力してください', 'error'); return; }
+  if(!cfg.pat){ showToast('PATãå¥åãã¦ãã ãã', 'error'); return; }
+  if(!cfg.owner || !cfg.repo || !cfg.path){ showToast('owner / repo / path ãå¥åãã¦ãã ãã', 'error'); return; }
   saveGitHubConfigData(cfg);
-  showToast('GitHub API設定を保存しました');
+  showToast('GitHub APIè¨­å®ãä¿å­ãã¾ãã');
 }
 
 async function testGitHubConfig(){
   const cfg = getGitHubConfig();
-  if(!cfg.pat){ showToast('PATが設定されていません', 'error'); return; }
-  showToast('接続テスト中...', 'info');
+  if(!cfg.pat){ showToast('PATãè¨­å®ããã¦ãã¾ãã', 'error'); return; }
+  showToast('æ¥ç¶ãã¹ãä¸­...', 'info');
   try{
     const res = await fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path, {
       headers: { 'Authorization': 'token ' + cfg.pat, 'Accept': 'application/vnd.github.v3+json' }
     });
     if(res.ok){
       const data = await res.json();
-      showToast('接続OK！ファイル確認済み (SHA: ' + data.sha.slice(0,8) + '...)');
+      showToast('æ¥ç¶OKï¼ãã¡ã¤ã«ç¢ºèªæ¸ã¿ (SHA: ' + data.sha.slice(0,8) + '...)');
     } else {
       const err = await res.json();
-      showToast('接続エラー: ' + (err.message || res.status), 'error');
+      showToast('æ¥ç¶ã¨ã©ã¼: ' + (err.message || res.status), 'error');
     }
   } catch(e){
-    showToast('ネットワークエラー: ' + e.message, 'error');
+    showToast('ãããã¯ã¼ã¯ã¨ã©ã¼: ' + e.message, 'error');
   }
 }
 
 async function commitToGitHub(message){
   const cfg=getGitHubConfig();
-  if(!cfg.pat||!cfg.owner||!cfg.repo||!cfg.path){showToast('GitHub API設定が未完了です（管理画面→設定→GitHub API連携設定）','warn');return;}
-  showToast('GitHubに保存中...','info');
+  if(!cfg.pat||!cfg.owner||!cfg.repo||!cfg.path){showToast('GitHub APIè¨­å®ãæªå®äºã§ãï¼ç®¡çç»é¢âè¨­å®âGitHub APIé£æºè¨­å®ï¼','warn');return;}
+  showToast('GitHubã«ä¿å­ä¸­...','info');
   try{
     const {html:updatedHtml,sha:currentSha}=await buildHtmlWithBakedData();
     const b64=btoa(unescape(encodeURIComponent(updatedHtml)));
@@ -1490,9 +1490,9 @@ async function commitToGitHub(message){
       headers:{'Authorization':'token '+cfg.pat,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
       body:JSON.stringify({message:message||'[Auto] '+new Date().toLocaleString('ja-JP'),content:b64,sha:currentSha})
     });
-    if(putRes.ok){showToast((message||'保存')+' → GitHubに反映しました！','success');}
-    else{const e=await putRes.json();showToast('GitHubエラー: '+(e.message||putRes.status),'error');}
-  }catch(e){showToast('commit失敗: '+e.message,'error');}
+    if(putRes.ok){showToast((message||'ä¿å­')+' â GitHubã«åæ ãã¾ããï¼','success');}
+    else{const e=await putRes.json();showToast('GitHubã¨ã©ã¼: '+(e.message||putRes.status),'error');}
+  }catch(e){showToast('commitå¤±æ: '+e.message,'error');}
 }
 
 async function buildHtmlWithBakedData(){
@@ -1503,18 +1503,57 @@ async function buildHtmlWithBakedData(){
   const res=await fetch(apiUrl,{headers:{'Authorization':'token '+cfg.pat,'Accept':'application/vnd.github.v3+json'}});
   const data=await res.json();
   let raw=decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-  const bakedTag='<script id="baked-data">
-(function(){
- var _w=[{"tags":[],"createdAt":1774608119578,"title":"聲の形 - A Silent Voice Short Film","cat":"personal","videoUrl":"https://www.youtube.com/embed/NDJTkCLxLsM","body":"yoake creativeで21人のクリエイターが共同自主制作「聲の形」にて 3D Assets Design として\n3Dアセット制作で関わらせて頂きました。","published":true,"videoData":"","bodyHtml":"yoake creativeで21人のクリエイターが共同自主制作「聲の形」にて 3D Assets Design として\n3Dアセット制作で関わらせて頂きました。<!-- notionvc: 96888253-7482-4560-9c30-3fade43534f0 -->","id":1774608119577,"thumb":""},{"id":1774608122782,"bodyHtml":"PändoraさんのVsingerデビューに向けてのティザーPVにて\n 3DAssets set up としてお手伝いさせていただきました<!-- notionvc: 03016579-d8d9-4177-97a2-81af4078038f -->","thumb":"","body":"PändoraさんのVsingerデビューに向けてのティザーPVにて\n 3DAssets set up としてお手伝いさせていただきました","published":true,"videoData":"","videoUrl":"https://www.youtube.com/embed/pmdl-U1ZHHc","title":"Pändora","cat":"three","tags":[],"createdAt":1774608122782},{"videoUrl":"https://www.youtube.com/embed/mVfzoF2ekR4","title":"泥中に咲く","cat":"mv","createdAt":1774608125244,"tags":[],"bodyHtml":"「泥中に咲く」歌ってみたMVにて、3D背景を担当させていただきました。<!-- notionvc: 943cdeb1-14d3-42de-8d9d-1c2f064aeea1 -->","thumb":"","id":1774608125244,"body":"「泥中に咲く」歌ってみたMVにて、3D背景を担当させていただきました。","published":true,"videoData":""}];
- var _s={};
- var _d={"show_about":false,"show_contact":true,"hero_layout":"split","cols":"auto","section_order":["hero","about","work","contact"],"about_title":"About Me","about_body":"","about_img":""};
- if(_w)localStorage.setItem('mczk_works',JSON.stringify(_w));
- if(_s)localStorage.setItem('mczk_site',JSON.stringify(_s));
- if(_d)localStorage.setItem('mczk_design',JSON.stringify(_d));
-})();
+  const bakedTag='<script id="baked-data">';
+  const bakedTagEnd='<\/script>';
+  const si=raw.indexOf(bakedTag);
+  const ei=raw.indexOf(bakedTagEnd,si);
+  const newBlock=bakedTag+'\n(function(){\n'+
+    '  var _w='+JSON.stringify(works)+';\n'+
+    '  var _s='+JSON.stringify(site)+';\n'+
+    '  var _d='+JSON.stringify(design)+';\n'+
+    (pw?'  if(!localStorage.getItem(\'mczk_pw\'))localStorage.setItem(\'mczk_pw\','+JSON.stringify(pw)+');\n':'')+
+    '  if(_w)localStorage.setItem(\'mczk_works\',JSON.stringify(_w));\n'+
+    '  if(_s)localStorage.setItem(\'mczk_site\',JSON.stringify(_s));\n'+
+    '  if(_d)localStorage.setItem(\'mczk_design\',JSON.stringify(_d));\n'+
+    '})();\n'+bakedTagEnd;
+  if(si!==-1&&ei!==-1){raw=raw.substring(0,si)+newBlock+raw.substring(ei+bakedTagEnd.length);}
+  raw=raw.replace(/(<div\s+id="adminOverlay")[^>]*>/,'$1>');
+  return {html:raw,sha:data.sha};
+}
+
+// ===== ãã¼ã¹ãéç¥ =====
+function showToast(msg, type){
+  let container = document.getElementById('toastContainer');
+  if(!container){
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  const colors = {error:'#f87171',warn:'#fbbf24',info:'var(--muted)',success:'var(--accent)'};
+  const borderColors = {error:'#f8717155',warn:'#fbbf2455',info:'var(--border)',success:'rgba(224,255,255,0.3)'};
+  const t = type || 'success';
+  toast.style.cssText = 'background:var(--surface);border:1px solid ' + (borderColors[t]||borderColors.success) + ';border-radius:3px;padding:0.7rem 1.2rem;font-family:\'Space Mono\',monospace;font-size:0.7rem;color:' + (colors[t]||colors.success) + ';letter-spacing:0.06em;pointer-events:auto;box-shadow:0 4px 20px rgba(0,0,0,0.4);max-width:320px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity 0.25s,transform 0.25s;';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  requestAnimationFrame(function(){ toast.style.opacity='1'; toast.style.transform='none'; });
+  const duration = (type === 'info') ? 8000 : 4000;
+  setTimeout(function(){
+    toast.style.opacity='0'; toast.style.transform='translateY(8px)';
+    setTimeout(function(){ toast.remove(); }, 300);
+  }, duration);
+}
+
 </script>
 <script id="baked-data">
 (function(){
+ var _w=[{"videoData":"","id":1774608119577,"tags":[],"createdAt":1774608119578,"cat":"personal","videoUrl":"https://www.youtube.com/embed/NDJTkCLxLsM","published":true,"title":"聲の形 - A Silent Voice Short Film","thumb":"","bodyHtml":"yoake creativeで21人のクリエイターが共同自主制作「聲の形」にて 3D Assets Design として\n3Dアセット制作で関わらせて頂きました。<!-- notionvc: 96888253-7482-4560-9c30-3fade43534f0 -->","body":"yoake creativeで21人のクリエイターが共同自主制作「聲の形」にて 3D Assets Design として\n3Dアセット制作で関わらせて頂きました。"},{"id":1774608122782,"videoData":"","title":"Pändora","published":true,"videoUrl":"https://www.youtube.com/embed/pmdl-U1ZHHc","createdAt":1774608122782,"cat":"three","tags":[],"thumb":"","bodyHtml":"PändoraさんのVsingerデビューに向けてのティザーPVにて\n 3DAssets set up としてお手伝いさせていただきました<!-- notionvc: 03016579-d8d9-4177-97a2-81af4078038f -->","body":"PändoraさんのVsingerデビューに向けてのティザーPVにて\n 3DAssets set up としてお手伝いさせていただきました"},{"bodyHtml":"「泥中に咲く」歌ってみたMVにて、3D背景を担当させていただきました。<!-- notionvc: 943cdeb1-14d3-42de-8d9d-1c2f064aeea1 -->","body":"「泥中に咲く」歌ってみたMVにて、3D背景を担当させていただきました。","thumb":"","title":"泥中に咲く","published":true,"videoUrl":"https://www.youtube.com/embed/mVfzoF2ekR4","createdAt":1774608125244,"cat":"mv","tags":[],"id":1774608125244,"videoData":""}];
+ var _s={};
+ var _d={};
+ if(_w)localStorage.setItem('mczk_works',JSON.stringify(_w));
+ if(_s)localStorage.setItem('mczk_site',JSON.stringify(_s));
+ if(_d)localStorage.setItem('mczk_design',JSON.stringify(_d));
 })();
 </script>
 </body>
